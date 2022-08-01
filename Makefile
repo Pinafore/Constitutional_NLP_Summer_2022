@@ -1,6 +1,9 @@
 20200929_bverfg_cases.csv:
 	python3 Download_Raw_Data.py
 
+case_scraping_Aug_01_2022.csv:
+	python3 Download_Updated_Data.py
+
 author2doc.json: Generate_author2doc.py
 	python3 Generate_author2doc.py
 
