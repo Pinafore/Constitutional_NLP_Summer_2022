@@ -67,9 +67,9 @@ def read_cases(filename, limit=-1):
     df_full_text['full_text'] = df_full_text['full_text'].apply(clean_text)
 
     text_list = lemmatization(df_full_text)
-    doc_term_matrix = create_term_matrix(text_list)
+    dictionary, doc_term_matrix = create_term_matrix(text_list)
     
-    return doc_term_matrix
+    return dictionary, doc_term_matrix
 
 
 def lemmatization(text_df, allowed_postags=['NOUN', 'ADJ']):
@@ -85,15 +85,16 @@ def create_term_matrix(tokenized_rulings):
     dictionary = corpora.Dictionary(tokenized_rulings)
     doc_term_matrix = [dictionary.doc2bow(rul) for rul in tokenized_rulings]
 
-    return doc_term_matrix
+    return dictionary, doc_term_matrix
 
 
-def fit_model(dataset, author_participation, output_filename, num_topics):
+def fit_model(dictionary, dataset, author_participation, output_filename, num_topics):
     from gensim.models import AuthorTopicModel
     
     model = AuthorTopicModel(corpus=dataset,
                              num_topics=flags.num_topics,
-                             author2doc=author_participation, random_state=1)#,
+                             author2doc=author_participation, 
+                             id2word=dictionary, random_state=1)#,
                              #chunksize=200, passes=1, eval_every=0, iterations=1, random_state=1)
 
     model.save(output_filename)
@@ -118,12 +119,14 @@ def output_author_vecs(model):
 
 
 def output_topics(model, num_topics):
-    #topics = model.print_topics(num_topics=37, num_words=10)
+    topics = model.show_topics(num_topics=37, num_words=10)
+    '''
     topics = ''
     for topic_id in range(num_topics):
         sorted_topic_terms = sorted(model.get_topic_terms(topic_id, topn=10), key=lambda x: x[1], reverse=True)
         topics += str(topic_id) + ': ' + str(sorted_topic_terms) + '\n'
     print('topics =', topics)
+    '''
     topics_file = open("at_model_topics.txt", "w")
     n = topics_file.write(str(topics))
     topics_file.close()
@@ -145,13 +148,13 @@ if __name__ == "__main__":
   flags = parser.parse_args()
 
   stop_words = stopwords.words('german')
-  cases = read_cases(flags.cases_source, limit=flags.limit)
+  dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
   if flags.limit > 0:
       author_participation = case_participation(flags.author_list, flags.limit)
   else:
       author_participation = case_participation(flags.author_list, len(cases))    
-  model = fit_model(cases, author_participation,
-                    flags.model_save, num_topics=flags.num_topics)
+  model = fit_model(dictionary, cases, author_participation, flags.model_save, num_topics=flags.num_topics)
+  #model = load_model(flags.model_save)
   author_vecs_file = output_author_vecs(model)
   topics_file = output_topics(model, num_topics = flags.num_topics)
   
