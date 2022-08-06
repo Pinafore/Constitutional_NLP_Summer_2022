@@ -23,8 +23,6 @@ def case_participation(filename, limit):
     Make a dictionary author2doc of which cases (documents) each justice
     participates in
     """
-    # col_list = ["bverfg_id", "participating_judges"]
-    # df = pd.read_csv("20200929_bverfg_cases.csv", usecols=col_list)
 
     with open(filename, "r") as a_file:
         author2doc = a_file.read()
@@ -36,14 +34,15 @@ def case_participation(filename, limit):
         author2doc[author] = [x for x in author2doc[author] if x < limit]
     
     return author2doc
-
+'''
 def remove_stopwords(text):
     textArr = text.split(' ')
     rem_text = " ".join([i for i in textArr if i not in stop_words])
     return rem_text
-
+'''
 def clean_text(text):
-    
+    with open("stop_words_Aug_01_2022.txt", "r") as fp:
+        stop_words = json.load(fp) 
     delete_dict = {sp_character: '' for sp_character in string.punctuation} 
     delete_dict[' '] = ' ' 
     table = str.maketrans(delete_dict)
