@@ -53,6 +53,19 @@ def output_topics(model, num_topics):
     
     return topics_file
 
+def output_doc_topic_distribution(model, doc_term_matrix):
+    all_topics = model.get_document_topics(doc_term_matrix, per_word_topics=True)
+    topic_distribution_per_doc_file = open("lda_model_most_likely_topic_per_doc.txt", "w")
+    
+    case_id = 0
+    for doc_topics, word_topics, phi_values in all_topics:
+        case_id += 1
+        most_likely_topic = max(doc_topics, key = lambda i : i[1])
+        print('Document ' + str(case_id) + ' has most likely topic: ' + str(most_likely_topic) + '\n')
+        n = topic_distribution_per_doc_file.write('Document ' + str(case_id) + ' has most likely topic: ' + str(most_likely_topic) + '\n')
+    topic_distribution_per_doc_file.close()
+    
+    return topic_distribution_per_doc_file
 
 if __name__ == "__main__":
     
@@ -66,9 +79,11 @@ if __name__ == "__main__":
   parser.add_argument('--num_topics', type=int, default=37)
   
   flags = parser.parse_args()
-  '''
+  
   dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
   model = fit_model(dictionary, cases, flags.model_save, num_topics=flags.num_topics)
-  '''
+  
   model = load_model(flags.model_save)
+  
   topics_file = output_topics(model, num_topics = flags.num_topics)
+  topic_distribution_per_doc_file =  output_doc_topic_distribution(model, doc_term_matrix=cases)
