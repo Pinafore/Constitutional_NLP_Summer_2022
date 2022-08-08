@@ -5,103 +5,37 @@ Created on Sat Jul 30 06:47:39 2022
 @author: Acer
 """
 
-import numpy as np
 import pandas as pd
 import string
 import json
 import argparse
 
 import spacy
-
-import gensim
 from gensim import corpora
 
 from nltk.corpus import stopwords
+from gensim.models import AuthorTopicModel
 
-def case_participation(filename, limit):
-    """
-    Make a dictionary author2doc of which cases (documents) each justice
-    participates in
-    """
+from Data_Preprocessing_for_Topic_Models import case_participation
+from Data_Preprocessing_for_Topic_Models import clean_text
+from Data_Preprocessing_for_Topic_Models import read_cases
+from Data_Preprocessing_for_Topic_Models import lemmatization
+from Data_Preprocessing_for_Topic_Models import create_term_matrix
 
-    with open(filename, "r") as a_file:
-        author2doc = a_file.read()
-
-        author2doc = json.loads(author2doc) #convert str to dict
-
-    # Remove all out of range documents
-    for author in author2doc:
-        author2doc[author] = [x for x in author2doc[author] if x < limit]
-    
-    return author2doc
-'''
-def remove_stopwords(text):
-    textArr = text.split(' ')
-    rem_text = " ".join([i for i in textArr if i not in stop_words])
-    return rem_text
-'''
-def clean_text(text):
-    with open("stop_words_Aug_01_2022.txt", "r") as fp:
-        stop_words = json.load(fp) 
-    delete_dict = {sp_character: '' for sp_character in string.punctuation} 
-    delete_dict[' '] = ' ' 
-    table = str.maketrans(delete_dict)
-    text1 = text.translate(table)
-    #print('cleaned:'+text1)
-    textArr= text1.lower().split()
-    text2 = ' '.join([w for w in textArr if ( not w.isdigit() and  ( not w.isdigit() and (not w in stop_words) and len(w)>3))]) 
-    
-    return text2
-
-def read_cases(filename, limit=-1):
-    col_list = ["bverfg_id_forward", "full_text"]
-
-    if limit > 0:
-        df_full_text = pd.read_csv(filename, usecols=col_list, nrows=limit)
-    else:
-        df_full_text = pd.read_csv(filename, usecols=col_list)
-
-    df_full_text.dropna(axis = 0, how ='any',inplace=True) 
-
-    df_full_text['full_text'] = df_full_text['full_text'].apply(clean_text)
-
-    text_list = lemmatization(df_full_text)
-    dictionary, doc_term_matrix = create_term_matrix(text_list)
-    
-    return dictionary, doc_term_matrix
-
-
-def lemmatization(text_df, allowed_postags=['NOUN', 'ADJ']):
-    nlp = spacy.load('de_core_news_md', disable=['parser', 'ner'])
-    texts = text_df['full_text'].tolist()    
-    output = []
-    for sent in texts:
-        doc = nlp(sent)     
-        output.append([token.lemma_ for token in doc if token.pos_ in allowed_postags])
-    return output
-
-def create_term_matrix(tokenized_rulings):
-    dictionary = corpora.Dictionary(tokenized_rulings)
-    doc_term_matrix = [dictionary.doc2bow(rul) for rul in tokenized_rulings]
-
-    return dictionary, doc_term_matrix
-
-
-def fit_model(dictionary, dataset, author_participation, output_filename, num_topics):
-    from gensim.models import AuthorTopicModel
-    
+def fit_model(dictionary, dataset, author_participation, output_filename, num_topics):   
     model = AuthorTopicModel(corpus=dataset,
                              num_topics=flags.num_topics,
                              author2doc=author_participation, 
                              id2word=dictionary, random_state=1)#,
                              #chunksize=200, passes=1, eval_every=0, iterations=1, random_state=1)
-
     model.save(output_filename)
     return model
  
     
 def load_model(filename):
-    return AuthorTopicModel.load('Author_Topic_model.atmodel')
+    #return AuthorTopicModel.load('Author_Topic_model.atmodel')
+    return AuthorTopicModel.load(filename)
+
 
 
 def output_author_vecs(model):
@@ -118,18 +52,19 @@ def output_author_vecs(model):
 
 
 def output_topics(model, num_topics):
-    topics = model.show_topics(num_topics=37, num_words=10)
-    '''
+    #topics = model.show_topics(num_topics=37, num_words=10)
+    
     topics = ''
     for topic_id in range(num_topics):
-        sorted_topic_terms = sorted(model.get_topic_terms(topic_id, topn=10), key=lambda x: x[1], reverse=True)
+        sorted_topic_terms = sorted(model.show_topic(topic_id, topn=10), key=lambda x: x[1], reverse=True)
         topics += str(topic_id) + ': ' + str(sorted_topic_terms) + '\n'
     print('topics =', topics)
-    '''
+    
     topics_file = open("at_model_topics.txt", "w")
     n = topics_file.write(str(topics))
     topics_file.close()
     return topics_file
+
 
 if __name__ == "__main__":
     
@@ -145,7 +80,7 @@ if __name__ == "__main__":
   parser.add_argument('--num_topics', type=int, default=37)
   
   flags = parser.parse_args()
-
+  '''
   stop_words = stopwords.words('german')
   dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
   if flags.limit > 0:
@@ -153,7 +88,8 @@ if __name__ == "__main__":
   else:
       author_participation = case_participation(flags.author_list, len(cases))    
   model = fit_model(dictionary, cases, author_participation, flags.model_save, num_topics=flags.num_topics)
-  #model = load_model(flags.model_save)
+  '''
+  model = load_model(flags.model_save)
   author_vecs_file = output_author_vecs(model)
   topics_file = output_topics(model, num_topics = flags.num_topics)
   
