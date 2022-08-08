@@ -4,6 +4,9 @@
 case_scraping_Aug_01_2022.csv:
 	python3 Download_Updated_Data.py
 
+case_scraping_Aug_01_2022.csv: Case_Scraping_with_BeautifulSoup_Aug_01_2022.py
+	python3 Case_Scraping_with_BeautifulSoup_Aug_01_2022.py
+
 author2doc_Aug_01_2022.json: Generate_author2doc.py
 	python3 Generate_author2doc.py
 
