@@ -7,6 +7,6 @@ Created on Thu Jul 21 01:30:59 2022
 
 import gdown
 
-url = "https://drive.google.com/drive/folders/10Gsuxs5T38uFnMOzHbL5d7LJOkMVxFKF?usp=sharing"
-output = "Case_Scraping_with_BeautifulSoup_July_18_2022.py.csv"
+url = "https://drive.google.com/file/d/1VBV57lpj0xMotY2a_8Io_fdvDLKdP6y8/view?usp=sharing"
+output = "case_scraping_Aug_01_2022.csv"
 gdown.download(url=url, output=output, quiet=False, fuzzy=True)
