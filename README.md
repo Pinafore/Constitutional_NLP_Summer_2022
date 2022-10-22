@@ -21,5 +21,7 @@ Run the
 4. Resources to double check the authors (judges)?
 Wiki page of all judges in the court (the participating_judges variable in csv file only shows their last name): https://de.wikipedia.org/wiki/Liste_der_Richter_des_Bundesverfassungsgerichts
 
+Link of raw data (before scraping) to compare approx case id with year (note: cases with id 10 or above probably decided after 1990s): https://www.bundesverfassungsgericht.de/SiteGlobals/Forms/Suche/Entscheidungensuche_Formular.html?gts=5403124_list%253Ddate_dt%252Basc&language_=de
+
 
 
