@@ -69,7 +69,7 @@ if __name__ == "__main__":
   parser.add_argument('--limit', type=int,
                       default=-1, help="Limit of number of cases")
   parser.add_argument('--author_list', type=str,
-                      default="author2doc_Aug_01_2022.json")
+                      default="author2doc.json")
   parser.add_argument('--cases_source', type=str,
                       default="case_scraping_Aug_01_2022.csv")
   parser.add_argument('--model_save', type=str,
