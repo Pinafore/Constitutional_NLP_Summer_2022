@@ -18,5 +18,8 @@ Run the
 
 3.2. Relevant distributions returned by running AT model?
 
+4. Resources to double check the authors (judges)?
+Wiki page of all judges in the court (the participating_judges variable in csv file only shows their last name): https://de.wikipedia.org/wiki/Liste_der_Richter_des_Bundesverfassungsgerichts
+
 
 
