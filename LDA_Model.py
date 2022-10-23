@@ -80,9 +80,11 @@ if __name__ == "__main__":
   
   flags = parser.parse_args()
   
+  # Comment out these two lines below if you do not want to re-train the LDA model, but use a saved LDA model
   dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
   model = fit_model(dictionary, cases, flags.model_save, num_topics=flags.num_topics)
-  
+  # Comment out these two lines above if you do not want to re-train the LDA model, but use a saved LDA model  
+
   model = load_model(flags.model_save)
   
   topics_file = output_topics(model, num_topics = flags.num_topics)
