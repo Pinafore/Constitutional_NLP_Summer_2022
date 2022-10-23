@@ -78,6 +78,7 @@ if __name__ == "__main__":
   
   flags = parser.parse_args()
 
+  # Comment out these two lines below if you do not want to re-train the LDA model, but use a saved LDA model
   stop_words = stopwords.words('german')
   dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
   if flags.limit > 0:
@@ -85,7 +86,8 @@ if __name__ == "__main__":
   else:
       author_participation = case_participation(flags.author_list, len(cases))    
   model = fit_model(dictionary, cases, author_participation, flags.model_save)
-
+  # Comment out these two lines below if you do not want to re-train the LDA model, but use a saved LDA model
+    
   model = load_model(flags.model_save)
   author_vecs_file = output_author_vecs(model)
   topics_file = output_topics(model, num_topics = flags.num_topics)
