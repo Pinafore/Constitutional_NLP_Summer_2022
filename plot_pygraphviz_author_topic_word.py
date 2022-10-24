@@ -1,8 +1,7 @@
-import graphviz
 import pygraphviz as pgv
+import argparse
 
-
-def topics_per_author_read(file_name):#author_topic_file_name, topic_word_file_name):
+def topics_per_author_read(file_name, threshold_AT_prob):#author_topic_file_name, topic_word_file_name):
     """
     Make a dictionary from txt file
     """
@@ -17,11 +16,15 @@ def topics_per_author_read(file_name):#author_topic_file_name, topic_word_file_n
         #print('author:', author)
         topic_prob_tuples = topics.strip(' [()]').split('), (')
         for topic_prob in topic_prob_tuples:
+            print('topic_prob:', topic_prob)
+            if len(topic_prob) == 0:
+                continue
             topic, prob = topic_prob.split(',')
             #print('topic_prob:', topic_prob)
             #print('topic:', topic)
             #print('prob:', prob)
-            if author != '':
+            #if author != '':
+            if float(prob) > threshold_AT_prob: #threshold probability for the author-topic edge to be drawn
                 author_topic_prob = [str(author), str(topic), float(prob)]
                 author_topic_prob_list.append(author_topic_prob)
                 topic_set.add(topic)
@@ -65,7 +68,7 @@ def words_per_topic_read(file_name):
     return topic_word_dict
 
 
-def plot_weighted_graph(author_topic_prob_list, author_set, topic_set, topic_word_dict):
+def plot_weighted_graph(author_topic_prob_list, author_set, topic_set, topic_word_dict, num_topics, num_displayed_words):
     dot = pgv.AGraph(rankdir="LR") #choose left to right bipartite structure (default is top to bottom)
 
     for topic in topic_set:
@@ -79,26 +82,41 @@ def plot_weighted_graph(author_topic_prob_list, author_set, topic_set, topic_wor
         word8 = topic_word_dict[topic][7]
         word9 = topic_word_dict[topic][8]
         word10 = topic_word_dict[topic][9]
+        if num_displayed_words == 10:
+            dot.add_node(topic, label=" <f0> " + topic + " | <f1> " + word1 + " | <f2> " + word2 + " | <f3> " + word3
+                                      + " | <f4> " + word4 + " | <f5> " + word5 + " | <f6> " + word6 + " | <f7> " + word7
+                         + " | <f8> " + word8 + " | <f9> " + word9 + " | <f10> " + word10, shape="record")
+        elif num_displayed_words == 5:
+            dot.add_node(topic, label=" <f0> " + topic + " | <f1> " + word1 + " | <f2> " + word2 + " | <f3> " + word3
+                                      + " | <f4> " + word4 + " | <f5> " + word5, shape="record")
+        elif num_displayed_words == 3:
+            dot.add_node(topic, label=" <f0> " + topic + " | <f1> " + word1 + " | <f2> " + word2 + " | <f3> " + word3, shape="record")
 
-        dot.add_node(topic, label=" <f0> " + topic + " | <f1> " + word1 + " | <f2> " + word2 + " | <f3> " + word3
-                                  + " | <f4> " + word4 + " | <f5> " + word5 + " | <f6> " + word6 + " | <f7> " + word7
-                     + " | <f8> " + word8 + " | <f9> " + word9 + " | <f10> " + word10, shape="record")
-
-    for author in author_set:
-        dot.add_node(author)
+    #for author in author_set:
+    #    dot.add_node(author)
 
     for author_topic_prob in author_topic_prob_list:
         #dot.add_edge(str(author_topic_prob[0]), str(author_topic_prob[1]), penwidth=author_topic_prob[2])
-        dot.add_edge(str(author_topic_prob[1]), str(author_topic_prob[0]), penwidth=author_topic_prob[2])#, weight=author_topic_prob[2])
+        dot.add_edge(str(author_topic_prob[1]), str(author_topic_prob[0]), penwidth=author_topic_prob[2], label=str(author_topic_prob[2])[:4])#, weight=author_topic_prob[2])
 
     #dot.graph_attr["shape"] = record
     dot.write("author_topic_weighted_pygraphviz_file.dot")
     dot.layout(prog='dot')  # help the layout looks bipartite and not messy (two clear regions of authors and topics)
-    dot.draw('author_topic_weighted_pygraphviz.png')
-    dot.draw('author_topic_weighted_pygraphviz.pdf')
+    dot.draw('author_topic_weighted_pygraphviz_num_topics=' + str(num_topics) + '.png')
+    dot.draw('author_topic_weighted_pygraphviz_num_topics=' + str(num_topics) + '.pdf')
 
 
 if __name__ == "__main__":
-    author_topic_prob_list, author_set, topic_set = topics_per_author_read(file_name='at_model_author_vecs_num_topics=10.txt')
-    topic_word_dict = words_per_topic_read(file_name='at_model_topics_num_topics=10.txt')
-    plot_weighted_graph(author_topic_prob_list, author_set, topic_set, topic_word_dict)
+    parser = argparse.ArgumentParser(description="Generate graphviz from author-topic and topic-word distributions")
+
+    parser.add_argument('--num_topics', type=int, default=37)
+    parser.add_argument('--num_displayed_words', type=int, default=10)
+    parser.add_argument('--threshold_AT_prob', type=float, default=0.2)
+
+    flags = parser.parse_args()
+
+    num_topics = str(flags.num_topics)
+    author_topic_prob_list, author_set, topic_set = topics_per_author_read(file_name='at_model_author_vecs_num_topics=' + num_topics + '.txt',
+                                                                           threshold_AT_prob = flags.threshold_AT_prob)
+    topic_word_dict = words_per_topic_read(file_name='at_model_topics_num_topics=' + num_topics + '.txt')
+    plot_weighted_graph(author_topic_prob_list, author_set, topic_set, topic_word_dict, num_topics, flags.num_displayed_words)
