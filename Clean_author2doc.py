@@ -48,6 +48,7 @@ def clean_author2doc(file_uncleaned):
 
     # extend the right keys
     json_cleaned_target['Broß'].extend(json_cleaned_target['Bro'])
+    json_cleaned_target['DiFabio'].extend(json_cleaned_target['Dixa0Fabio'])
     json_cleaned_target['Gerhardt'].extend(json_cleaned_target['Gerhard'])
     json_cleaned_target['Hassemer'].extend(json_cleaned_target['Hasseme'])
     json_cleaned_target['Henschel'].extend(json_cleaned_target['Hentschel'])
@@ -62,14 +63,14 @@ def clean_author2doc(file_uncleaned):
     json_cleaned_target['Wallrabenstein'].extend(json_cleaned_target['Wallrabensein'])
 
     drop_keys_alt = ['Bro','Gerhard','Hasseme','Hentschel','Herrmanns','Hmig','HohmannDennhardt', \
-                    'Jaeger','KessalWulff','Khling','LübbeWoff','Vosskuhle','Wallrabensein']
+                    'Jaeger','KessalWulff','Khling','LübbeWoff','Vosskuhle','Wallrabensein','Dixa0Fabio']
     for key in drop_keys_alt:
         json_cleaned_target.pop(key, None)
     
     # rename one key
     json_cleaned_target['Leusser'] = json_cleaned_target.pop('Leuser', None)
 
-    #print(sorted(json_cleaned_target))
+    print(sorted(json_cleaned_target))
     return json_cleaned_target
 
 
