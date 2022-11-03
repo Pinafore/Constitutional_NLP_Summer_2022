@@ -1,13 +1,16 @@
 # Legal NLP with Topic Models
 
 
-1. How to download the scraped dataset locally?
+1. How to download the two relevant csv files locally?
 
+1.a. Court decision data:
 Get case_scraping_Aug_01_2022.csv from the Makefile on Github, or go to the Google Drive folder: 
 
 Legal NLP Project (with MPI Coll) -> Updated Data -> case_scraping_Aug_01_2022.csv .
 
 Some variables (columns) of current interest are 'participating_judges' and 'full_text'.
+
+1.b. Ground-truth domains of each author (1998-2021 only): https://docs.google.com/spreadsheets/d/1IgzpIj6pU7uMIKuyO27jugwK_MTbEeEW/edit#gid=853052284
 
 
 2.1. How to run LDA?
