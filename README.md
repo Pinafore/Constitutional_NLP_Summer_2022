@@ -18,8 +18,6 @@ Some variables (columns) of current interest are 'participating_judges' and 'ful
 Make sure you have downloaded both Data_Preprocessing_for_Topic_Models.py and LDA_Model.py , then run LDA_Model.py . You can change the number of topics (default = 37) by call the flag --num_topics . For example, run this command to get results with 10 topics: python3 LDA_Model.py --num_topics 10
 
 -> Which section to comment out to avoid training the model again, but use a trained and saved model (instructions in .py file; Don't forget to download the model file too):
-
-  dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
   
   model = fit_model(dictionary, cases, flags.model_save, num_topics=flags.num_topics)
 
