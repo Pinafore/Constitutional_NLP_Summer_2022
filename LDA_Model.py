@@ -27,7 +27,7 @@ from Data_Preprocessing_for_Topic_Models import create_term_matrix
 
 def fit_model(dictionary, dataset, output_filename, num_topics):
     model = LdaModel(corpus=dataset,
-                     num_topics=flags.num_topics,
+                     num_topics=num_topics,
                      id2word=dictionary, 
                      random_state=1)
     model.save(output_filename)
@@ -47,16 +47,16 @@ def output_topics(model, num_topics):
         topics += str(topicno) + ': ' + str(sorted_topic_terms) + '\n'
     print('topics =', topics)
     
-    topics_file = open("lda_model_topics.txt", "w")
+    topics_file = open("lda_model_topics_num_topics=" + str(num_topics) + ".txt", "w")
     n = topics_file.write(str(topics))
     topics_file.close()
     
     return topics_file
 
-def output_doc_topic_distribution(model, doc_term_matrix):
+def output_doc_topic_distribution(model, doc_term_matrix, num_topics):
     all_topics = model.get_document_topics(doc_term_matrix, minimum_probability=0.1)
     #topic_distribution_per_doc_file = open("lda_model_most_likely_topic_per_doc.txt", "w")
-    topic_distribution_per_doc_file = open("lda_model_topics_per_doc.txt", "w")
+    topic_distribution_per_doc_file = open("lda_model_topics_per_doc_num_topics=" + str(num_topics) + ".txt", "w")
 
     case_id = 0
     for doc_topics in all_topics:
@@ -82,16 +82,14 @@ if __name__ == "__main__":
                       default=-1, help="Limit of number of cases")
   parser.add_argument('--cases_source', type=str,
                       default="case_scraping_Aug_01_2022.csv")
-  parser.add_argument('--model_save', type=str,
-                      default="lda_model.save")
   parser.add_argument('--num_topics', type=int, default=100)
   
   flags = parser.parse_args()
   
   dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
-  model = fit_model(dictionary, cases, flags.model_save, num_topics=flags.num_topics)
+  model = fit_model(dictionary, cases, output_filename="lda_model_num_topics=" + str(flags.num_topics) + ".save", num_topics=flags.num_topics)
   
-  model = load_model(flags.model_save)
+  model = load_model(filename="lda_model_num_topics=" + str(flags.num_topics) + ".save")
   
   topics_file = output_topics(model, num_topics = flags.num_topics)
-  topic_distribution_per_doc_file =  output_doc_topic_distribution(model, doc_term_matrix=cases)
+  topic_distribution_per_doc_file =  output_doc_topic_distribution(model, doc_term_matrix=cases, num_topics = flags.num_topics)
