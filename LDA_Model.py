@@ -54,15 +54,23 @@ def output_topics(model, num_topics):
     return topics_file
 
 def output_doc_topic_distribution(model, doc_term_matrix):
-    all_topics = model.get_document_topics(doc_term_matrix, per_word_topics=True)
-    topic_distribution_per_doc_file = open("lda_model_most_likely_topic_per_doc.txt", "w")
-    
+    all_topics = model.get_document_topics(doc_term_matrix, minimum_probability=0.1)
+    #topic_distribution_per_doc_file = open("lda_model_most_likely_topic_per_doc.txt", "w")
+    topic_distribution_per_doc_file = open("lda_model_topics_per_doc.txt", "w")
+
     case_id = 0
-    for doc_topics, word_topics, phi_values in all_topics:
+    for doc_topics in all_topics:
         case_id += 1
+        '''
         most_likely_topic = max(doc_topics, key = lambda i : i[1])
         print('Document ' + str(case_id) + ' has most likely topic: ' + str(most_likely_topic) + '\n')
         n = topic_distribution_per_doc_file.write('Document ' + str(case_id) + ' has most likely topic: ' + str(most_likely_topic) + '\n')
+        '''
+
+        doc_topics = sorted(doc_topics, key=lambda x: x[1], reverse=True)
+        print('Document ' + str(case_id) + ' has most likely topics: ' + str(doc_topics) + '\n')
+        n = topic_distribution_per_doc_file.write(
+            'Document ' + str(case_id) + ' has most likely topics: ' + str(doc_topics) + '\n')
     topic_distribution_per_doc_file.close()
     
     return topic_distribution_per_doc_file
@@ -76,15 +84,13 @@ if __name__ == "__main__":
                       default="case_scraping_Aug_01_2022.csv")
   parser.add_argument('--model_save', type=str,
                       default="lda_model.save")
-  parser.add_argument('--num_topics', type=int, default=37)
+  parser.add_argument('--num_topics', type=int, default=100)
   
   flags = parser.parse_args()
   
-  # Comment out these two lines below if you do not want to re-train the LDA model, but use a saved LDA model
   dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
   model = fit_model(dictionary, cases, flags.model_save, num_topics=flags.num_topics)
-  # Comment out these two lines above if you do not want to re-train the LDA model, but use a saved LDA model  
-
+  
   model = load_model(flags.model_save)
   
   topics_file = output_topics(model, num_topics = flags.num_topics)
