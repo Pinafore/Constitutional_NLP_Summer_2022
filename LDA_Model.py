@@ -81,7 +81,7 @@ if __name__ == "__main__":
   parser.add_argument('--limit', type=int,
                       default=-1, help="Limit of number of cases")
   parser.add_argument('--cases_source', type=str,
-                      default="case_scraping_Aug_01_2022.csv")
+                      default="case_scraping_01_1998_to_07_2022.csv")
   parser.add_argument('--num_topics', type=int, default=100)
   
   flags = parser.parse_args()

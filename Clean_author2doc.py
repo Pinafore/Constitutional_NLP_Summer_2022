@@ -70,14 +70,19 @@ def clean_author2doc(file_uncleaned):
     # rename one key
     json_cleaned_target['Leusser'] = json_cleaned_target.pop('Leuser', None)
 
+    #Delete any key with None value
+    for key, value in json_cleaned_target.copy().items():
+        if value is None:
+            del json_cleaned_target[key]
+
     print(sorted(json_cleaned_target))
     return json_cleaned_target
 
 
 
 if __name__ == "__main__":
-    json_cleaned = clean_author2doc("author2doc.json")
-    with open('clean_author2doc.json', 'w') as f:
+    json_cleaned = clean_author2doc("author2doc_01_1998_to_07_2022.json")
+    with open('clean_author2doc_01_1998_to_07_2022.json', 'w') as f:
         json.dump(json_cleaned, f)
 
 

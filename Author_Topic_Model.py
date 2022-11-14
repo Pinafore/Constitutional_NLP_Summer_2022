@@ -9,11 +9,11 @@ from gensim import corpora
 from nltk.corpus import stopwords
 from gensim.models import AuthorTopicModel
 
-from Data_Preprocessing_for_Topic_Models import case_participation
-from Data_Preprocessing_for_Topic_Models import clean_text
-from Data_Preprocessing_for_Topic_Models import read_cases
-from Data_Preprocessing_for_Topic_Models import lemmatization
-from Data_Preprocessing_for_Topic_Models import create_term_matrix
+from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import case_participation
+from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import clean_text
+from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import read_cases
+from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import lemmatization
+from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import create_term_matrix
 
 
 def fit_model(dictionary, dataset, author_participation, output_filename):
@@ -62,9 +62,9 @@ if __name__ == "__main__":
     parser.add_argument('--limit', type=int,
                         default=-1, help="Limit of number of cases")
     parser.add_argument('--author_list', type=str,
-                        default="clean_author2doc.json")
+                        default="clean_author2doc_01_1998_to_07_2022.json")
     parser.add_argument('--cases_source', type=str,
-                        default="case_scraping_Aug_01_2022.csv")
+                        default="case_scraping_01_1998_to_07_2022.csv")
     #parser.add_argument('--model_save', type=str,
     #                    default="at_model.save")
     parser.add_argument('--num_topics', type=int, default=100)
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     flags = parser.parse_args()
     
     # Comment out these lines below if you do not want to re-train the AT model, but use a saved AT model
-    stop_words = stopwords.words('german')
+    #stop_words = stopwords.words('german')
     dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
     if flags.limit > 0:
         author_participation = case_participation(flags.author_list, flags.limit)

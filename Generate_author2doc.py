@@ -49,6 +49,6 @@ for key in unique_author_filter_len:
 
 import json
 
-a_file = open("author2doc_Aug_01_2022.json", "w")
+a_file = open("author2doc_01_1998_to_07_2022.json", "w")
 json.dump(author2doc, a_file)
 a_file.close()
