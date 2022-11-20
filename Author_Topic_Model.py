@@ -15,7 +15,7 @@ def fit_model(dictionary, dataset, author_participation, output_filename):
     model = AuthorTopicModel(corpus=dataset,
                              num_topics=flags.num_topics,
                              author2doc=author_participation,
-                             id2word=dictionary, random_state=1)
+                             id2word=dictionary, passes = 10, random_state=1)
     model.save(output_filename)
     return model
 
@@ -68,15 +68,17 @@ if __name__ == "__main__":
     
     # Comment out these lines below if you do not want to re-train the AT model, but use a saved AT model
     #stop_words = stopwords.words('german')
-    dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
+
+    #dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
 
     #Save and Load
     import pickle
-
+    '''
     with open('read_cases_dictionary.json', 'wb') as f:
         pickle.dump(dictionary, f)
     with open('read_cases_cases.json', 'wb') as f:
         pickle.dump(cases, f)
+    '''
 
     with open('read_cases_dictionary.json', 'rb') as f:
         dictionary = pickle.load(f)
