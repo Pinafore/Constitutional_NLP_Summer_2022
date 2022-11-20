@@ -9,12 +9,7 @@ from gensim import corpora
 from nltk.corpus import stopwords
 from gensim.models import AuthorTopicModel
 
-from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import case_participation
-from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import clean_text
-from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import read_cases
-from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import lemmatization
-from Data_Preprocessing_for_Topic_Models_01_1998_to_07_2022 import create_term_matrix
-
+from Data_Preprocessing_for_Topic_Models import case_participation, clean_text, read_cases, lemmatization, create_term_matrix
 
 def fit_model(dictionary, dataset, author_participation, output_filename):
     model = AuthorTopicModel(corpus=dataset,
@@ -74,11 +69,25 @@ if __name__ == "__main__":
     # Comment out these lines below if you do not want to re-train the AT model, but use a saved AT model
     #stop_words = stopwords.words('german')
     dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
+
+    #Save and Load
+    import pickle
+
+    with open('read_cases_dictionary.json', 'wb') as f:
+        pickle.dump(dictionary, f)
+    with open('read_cases_cases.json', 'wb') as f:
+        pickle.dump(cases, f)
+
+    with open('read_cases_dictionary.json', 'rb') as f:
+        dictionary = pickle.load(f)
+    with open('read_cases_cases.json', 'rb') as f:
+        cases = pickle.load(f)
+
+
     if flags.limit > 0:
         author_participation = case_participation(flags.author_list, flags.limit)
     else:
         author_participation = case_participation(flags.author_list, len(cases))
-    #model = fit_model(dictionary, cases, author_participation, flags.model_save)
     model = fit_model(dictionary, cases, author_participation, output_filename="at_model_num_topics=" + str(flags.num_topics) + ".save")
     # Comment out these two lines above if you do not want to re-train the AT model, but use a saved AT model
 

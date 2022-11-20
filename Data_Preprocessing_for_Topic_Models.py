@@ -26,11 +26,11 @@ def case_participation(filename, limit):
         author2doc = a_file.read()
 
         author2doc = json.loads(author2doc) #convert str to dict
-        print('author2doc:', author2doc)
+        #print('author2doc:', author2doc)
 
     # Remove all out of range documents
     for author in author2doc:
-        print('author:', author)
+        #print('author:', author)
         author2doc[author] = [x for x in author2doc[author] if x < limit]
     
     return author2doc
@@ -63,52 +63,59 @@ def clean_text(text):
     print('len(stop_words_set):', len(stop_words_set))
     return filtered_text
     '''
-    delete_dict = {sp_character: '' for sp_character in string.punctuation} 
-    delete_dict[' '] = ' ' 
+    delete_dict = {sp_character: '' for sp_character in string.punctuation}
+    delete_dict[' '] = ' '
     table = str.maketrans(delete_dict)
-    text1 = text.translate(table)
-    #print('cleaned:'+text1)
-    textArr= text1.lower().split()
+    #text1 = text.translate(table)
+    #textArr= text1.lower().split()
+    textArr = [token.lower().translate(table) for token in text]
+    #print('textArr:', textArr)
+
+
     #textArr = text1.split()
     #delete tokens that contains number, tokens in stop word list, and too short tokens
-    text2 = ' '.join([w for w in textArr if (not any(char.isdigit() for char in w)) and (not w in stop_words) and len(w)>3])
-    #print('text2:', text2)
+    #text2 = ' '.join([w for w in textArr if (not any(char.isdigit() for char in w)) and (not w in stop_words) and len(w)>3])
+    text2 = [w for w in textArr if (not any(char.isdigit() for char in w)) and (not w in stop_words) and len(w) > 3]
+    print('clean text:', text2)
     return text2 
 
+def lemmatization(text, allowed_postags=['NOUN', 'ADJ', 'VERB']):
+    nlp = spacy.load('de_core_news_md', disable=['parser', 'ner'])
 
+    doc = nlp(text)
+    text2 = [token.lemma_ for token in doc if token.pos_ in allowed_postags]
+    #text2 = ' '.join([token.lemma_ for token in doc if token.pos_ in allowed_postags])
+    print('lemma text:', text2)
+    return text2
 
 
 def read_cases(filename, limit=-1):
+    print('read_cases started')
     col_list = ["bverfg_id_forward", "full_text"]
-    #col_list = ["full_text"]
+    # col_list = ["full_text"]
 
     if limit > 0:
         df_full_text = pd.read_csv(filename, usecols=col_list, nrows=limit)
     else:
         df_full_text = pd.read_csv(filename, usecols=col_list)
 
-    df_full_text.dropna(axis = 0, how ='any',inplace=True) 
+    df_full_text.dropna(axis=0, how='any', inplace=True)
 
+    df_full_text['full_text'] = df_full_text['full_text'].apply(lemmatization)
     df_full_text['full_text'] = df_full_text['full_text'].apply(clean_text)
-    print('after clean-text:', df_full_text['full_text'][0:3])
-    text_list = lemmatization(df_full_text)
-    print('text_list after lemmatization:', text_list)
 
+    #print('after clean-text:', df_full_text['full_text'])
+
+    text_list = df_full_text['full_text'].tolist()
+    #text_list = lemmatization(df_full_text)
+    #print('text_list after lemmatization:', text_list)
 
     dictionary, doc_term_matrix = create_term_matrix(text_list)
-    
+
+    #print('dictionary:', dictionary)
+    #print('doc_term_matrix:', doc_term_matrix)
+    print('read_cases done')
     return dictionary, doc_term_matrix
-
-
-def lemmatization(text_df, allowed_postags=['NOUN', 'ADJ']):
-    nlp = spacy.load('de_core_news_md', disable=['parser', 'ner'])
-    texts = text_df['full_text'].tolist()    
-    output = []
-    for sent in texts:
-        doc = nlp(sent)     
-        output.append([token.lemma_ for token in doc if token.pos_ in allowed_postags])
-    return output
-
 
 def create_term_matrix(tokenized_rulings):
     dictionary = corpora.Dictionary(tokenized_rulings)
