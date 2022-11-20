@@ -87,6 +87,11 @@ if __name__ == "__main__":
   flags = parser.parse_args()
   
   dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
+    
+  corpora_file = open("corpora.txt", "w")
+  n = corpora_file.write(str(cases))
+  corpora_file.close()
+    
   model = fit_model(dictionary, cases, output_filename="lda_model_num_topics=" + str(flags.num_topics) + ".save", num_topics=flags.num_topics)
   
   model = load_model(filename="lda_model_num_topics=" + str(flags.num_topics) + ".save")
