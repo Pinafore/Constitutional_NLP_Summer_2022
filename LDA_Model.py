@@ -28,7 +28,8 @@ from Data_Preprocessing_for_Topic_Models import create_term_matrix
 def fit_model(dictionary, dataset, output_filename, num_topics):
     model = LdaModel(corpus=dataset,
                      num_topics=num_topics,
-                     id2word=dictionary, 
+                     id2word=dictionary,
+                     passes=10,
                      random_state=1)
     model.save(output_filename)
  
@@ -86,12 +87,30 @@ if __name__ == "__main__":
   
   flags = parser.parse_args()
   
-  dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
-    
+  #dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
+
+  # Save and Load
+  import pickle
+
+  '''
+  with open('read_cases_dictionary.json', 'wb') as f:
+      pickle.dump(dictionary, f)
+  with open('read_cases_cases.json', 'wb') as f:
+      pickle.dump(cases, f)
+  '''
+
+  with open('read_cases_dictionary.json', 'rb') as f:
+      dictionary = pickle.load(f)
+  with open('read_cases_cases.json', 'rb') as f:
+      cases = pickle.load(f)
+
+  #Save cases (corpora)
+  '''
   corpora_file = open("corpora.txt", "w")
   n = corpora_file.write(str(cases))
   corpora_file.close()
-    
+  '''
+
   model = fit_model(dictionary, cases, output_filename="lda_model_num_topics=" + str(flags.num_topics) + ".save", num_topics=flags.num_topics)
   
   model = load_model(filename="lda_model_num_topics=" + str(flags.num_topics) + ".save")
