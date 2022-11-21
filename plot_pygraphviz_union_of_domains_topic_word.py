@@ -116,14 +116,14 @@ def plot_weighted_graph(author_topic_prob_list, author_set, topic_set, topic_wor
         dot.add_edge(str(author_topic_prob[1]), str(author_topic_prob[0]), penwidth=author_topic_prob[2], label=str(author_topic_prob[2])[:4])#, weight=author_topic_prob[2])
 
     #dot.graph_attr["shape"] = record
-    dot.write("author_topic_weighted_pygraphviz_file.dot")
+    dot.write("union_of_domains_topic_weighted_pygraphviz_file.dot")
     dot.layout(prog='dot')  # help the layout looks bipartite and not messy (two clear regions of authors and topics)
-    dot.draw('author_topic_weighted_pygraphviz_num_topics=' + str(num_topics) + '.png')
-    dot.draw('author_topic_weighted_pygraphviz_num_topics=' + str(num_topics) + '.pdf')
+    dot.draw('union_of_domains_topic_weighted_pygraphviz_num_topics=' + str(num_topics) + '.png')
+    dot.draw('union_of_domains_topic_weighted_pygraphviz_num_topics=' + str(num_topics) + '.pdf')
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate graphviz from author-topic and topic-word distributions")
+    parser = argparse.ArgumentParser(description="Generate graphviz from domain-topic and topic-word distributions")
 
     parser.add_argument('--num_topics', type=int, default=100)
     parser.add_argument('--num_displayed_words', type=int, default=10)
@@ -136,8 +136,8 @@ if __name__ == "__main__":
     flags = parser.parse_args()
 
     num_topics = str(flags.num_topics)
-    author_topic_prob_pruned, author_set, topic_set = topics_per_author_read(file_name='at_model_author_vecs_num_topics=' + num_topics + '.txt',
+    author_topic_prob_pruned, author_set, topic_set = topics_per_author_read(file_name='at_model_union_of_domains_author_vecs_num_topics=' + num_topics + '.txt',
                                                                            threshold_AT_prob = flags.threshold_AT_prob,
                                                                            threshold_authors_per_topic = flags.threshold_authors_per_topic)
-    topic_word_dict = words_per_topic_read(file_name='at_model_topics_num_topics=' + num_topics + '.txt')
+    topic_word_dict = words_per_topic_read(file_name='at_model_union_of_domains_topics_num_topics=' + num_topics + '.txt')
     plot_weighted_graph(author_topic_prob_pruned, author_set, topic_set, topic_word_dict, num_topics, flags.num_displayed_words)
