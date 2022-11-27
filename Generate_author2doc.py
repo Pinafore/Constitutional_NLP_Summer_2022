@@ -8,7 +8,8 @@ Created on Mon Jul 18 14:03:33 2022
 import numpy as np
 import pandas as pd
 col_list = ["bverfg_id_forward", "participating_judges"]
-df = pd.read_csv("case_scraping_01_1998_to_07_2022.csv", usecols=col_list)
+#df = pd.read_csv("case_scraping_01_1998_to_07_2022.csv", usecols=col_list)
+df = pd.read_csv("case_scraping_01_1998_to_07_2022_noNaN.csv", usecols=col_list)
 
 authors_no_curly_brackets = [authors[1:-2] for authors in df["participating_judges"]]
 authors_no_und = [authors.replace( ' und', '') for authors in authors_no_curly_brackets] #take out ' und'
@@ -49,6 +50,7 @@ for key in unique_author_filter_len:
 
 import json
 
-a_file = open("author2doc_01_1998_to_07_2022.json", "w")
+#a_file = open("author2doc_01_1998_to_07_2022.json", "w")
+a_file = open("author2doc_01_1998_to_07_2022_noNaN.json", "w")
 json.dump(author2doc, a_file)
 a_file.close()
