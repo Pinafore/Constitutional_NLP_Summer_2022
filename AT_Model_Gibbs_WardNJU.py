@@ -10,7 +10,9 @@ from datetime import datetime
 from collections import Counter, defaultdict
 
 import json
+import pickle
 import argparse
+
 
 class DataPreProcessing(object):
     def __init__(self):
@@ -216,12 +218,22 @@ class ATM(object):
                 topic.append((prob, word))
             #topics.append(topic)
             topics[k] = topic
-
+        '''
         with open('WardNJU_words_per_topic_num_topics=' + str(self.K) + '.json', 'w') as f:
             json.dump(topics, f)
 
         with open('WardNJU_words_per_topic_num_topics=' + str(self.K) + '.json', 'r') as f:
             topics = json.load(f)
+        '''
+
+        with open('WardNJU_words_per_topic_num_topics=' + str(self.K) + '.json', 'wb') as f:
+            pickle.dump(topics, f)
+
+        with open('WardNJU_words_per_topic_num_topics=' + str(self.K) + '.json', 'rb') as f:
+            topics = pickle.load(f)
+
+        with open('WardNJU_words_per_topic_num_topics=' + str(self.K) + '.txt', "w") as f:
+            n = f.write(str(topics))
 
         return topics
 
@@ -240,7 +252,7 @@ class ATM(object):
 
 
 
-    def print_at(self, topN=2):
+    def print_at(self, topN=7):
         authors = {}
         for a in range(self.A):
             author = []
@@ -251,17 +263,26 @@ class ATM(object):
                 author.append((prob, topic))
             author_name = self.dpre.id2author[a]
             authors[author_name] = author
-
+        '''
         with open('WardNJU_topics_per_author_num_topics=' + str(self.K) + '.json', 'w') as f:
-            json.dump(topics, f)
+            json.dump(authors, f)
 
         with open('WardNJU_topics_per_author_num_topics=' + str(self.K) + '.json', 'r') as f:
             authors = json.load(f)
+        '''
+        with open('WardNJU_topics_per_author_num_topics=' + str(self.K) + '.json', 'wb') as f:
+            pickle.dump(authors, f)
+
+        with open('WardNJU_topics_per_author_num_topics=' + str(self.K) + '.json', 'rb') as f:
+            authors = pickle.load(f)
+
+        with open('WardNJU_topics_per_author_num_topics=' + str(self.K) + '.txt', "w") as f:
+            n = f.write(str(authors))
 
         return authors
 
 
-    def print_topics_per_doc(self, topN=2):
+    def print_topics_per_doc(self, topN=3):
         topics_prob_per_doc_all = {} #dict of dict
         for m in range(self.dpre.docs_count):
             z_doc = self.Z_assigment[m]
@@ -284,30 +305,41 @@ class ATM(object):
             #print('Document {} has most likely topics:{}'.format(m, topic_prob_per_doc_dict))
             topics_prob_per_doc_all[m] = topic_prob_per_doc_dict
 
-
+        '''
         with open('WardNJU_topics_per_doc_num_topics=' + str(self.K) + '.json', 'w') as f:
             json.dump(topics_prob_per_doc_all, f)
 
         with open('WardNJU_topics_per_doc_num_topics=' + str(self.K) + '.json', 'r') as f:
             topics_prob_per_doc_all = json.load(f)
+        '''
 
-        #print('topics_prob_per_doc_all:', topics_prob_per_doc_all)
+        with open('WardNJU_topics_per_doc_num_topics=' + str(self.K) + '.json', 'wb') as f:
+            pickle.dump(topics_prob_per_doc_all, f)
+
+        with open('WardNJU_topics_per_doc_num_topics=' + str(self.K) + '.json', 'rb') as f:
+            topics_prob_per_doc_all = pickle.load(f)
+
+        with open('WardNJU_topics_per_doc_num_topics=' + str(self.K) + '.txt', "w") as f:
+            n = f.write(str(topics_prob_per_doc_all))
+
+        print('topics_prob_per_doc_all:', topics_prob_per_doc_all)
 
 
 
-    def print_authors_per_doc(self, topN=2):
+    def print_authors_per_doc(self, topN=8):
         authors_prob_per_doc_all = {} #dict of dict
         for m in range(self.dpre.docs_count):
             a_doc = self.A_assigment[m]
             print('a_doc:', a_doc)
             a_keys, a_counts = np.array(list(Counter(a_doc).keys())), np.array(list(Counter(a_doc).values()))
-            a_keys = [self.dpre.id2author[a] for a in a_keys]
+            a_keys = np.array([self.dpre.id2author[a] for a in a_keys])
             a_probs = np.array([round(a_count/sum(a_counts),2) for a_count in a_counts])
             print('a_keys:', a_keys)
             print('a_counts:', a_counts)
             print('a_probs:', a_probs)
             if len(a_counts) > topN:
                 top_indices = a_counts.argsort()[::-1][:topN]
+                print('top_indices:', top_indices)
                 a_keys = a_keys[top_indices]
                 a_probs = a_probs[top_indices]
                 print('top a_keys:', a_keys)
@@ -318,33 +350,45 @@ class ATM(object):
             print('author_prob_per_doc_dict:', author_prob_per_doc_dict)
             print('Document {} has most likely authors:{}'.format(m, author_prob_per_doc_dict))
             authors_prob_per_doc_all[m] = author_prob_per_doc_dict
-
+            '''
             with open('WardNJU_authors_per_doc_num_topics=' + str(self.K) + '.json', 'w') as f:
                 json.dump(authors_prob_per_doc_all, f)
 
             with open('WardNJU_authors_per_doc_num_topics=' + str(self.K) + '.json', 'r') as f:
                 authors_prob_per_doc_all = json.load(f)
+            '''
+
+            with open('WardNJU_authors_per_doc_num_topics=' + str(self.K) + '.json', 'wb') as f:
+                pickle.dump(authors_prob_per_doc_all, f)
+
+            with open('WardNJU_authors_per_doc_num_topics=' + str(self.K) + '.json', 'rb') as f:
+                authors_prob_per_doc_all = pickle.load(f)
+
+            with open('WardNJU_authors_per_doc_num_topics=' + str(self.K) + '.txt', "w") as f:
+                n = f.write(str(authors_prob_per_doc_all))
 
             print('authors_prob_per_doc_all:', authors_prob_per_doc_all)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Implement AT Model with Gibbs")
-    parser.add_argument('--num_topics', type=int, default=10)
+    parser.add_argument('--num_topics', type=int, default=100)
 
     flags = parser.parse_args()
 
+    with open('authors_per_doc_lol.json', 'r') as f:
+        authors_per_doc_lol = json.load(f)
 
-    #corpus = [[(0, 6), (1, 1), (2, 2), (3, 1), (4, 1), (5, 1), (6, 1), (7, 2), (8, 1), (9, 1), (10, 1), (11, 1), (12, 2),
-    #  (13, 1), (14, 1), (15, 1), (16, 2), (17, 1), (18, 1), (19, 1), (20, 1), (21, 2), (22, 3), (23, 1), (24, 1),
-    #  (25, 3), (26, 1), (27, 1), (28, 1), (29, 2), (30, 2), (31, 1), (32, 1), (33, 1)], [(4, 2), (6, 11), (12, 2), (36, 4), (48, 2), (58, 1), (63, 2), (88, 4), (103, 1), (120, 1), (144, 2), (181, 1), (195, 1), (202, 1), (223, 4), (226, 2), (232, 2), (242, 1), (258, 1)]]
+    with open('read_cases_manualATM_text_list.json', 'r') as f:
+        read_cases_manualATM_text_list = json.load(f)
 
-    corpus = [['computer', 'medical', 'DM', 'algorithm', 'drug', 'computer'],
-              ['computer', 'AI', 'DM', 'algorithm'],
-              ['art', 'beauty', 'architectural'],
-              ['drug', 'medical', 'hospital']]
-    authors = [['Tom', 'Amy'], ['Tom'], ['Ward'], ['Amy']]
-    dpre = preprocessing(corpus, authors)
-    '''
+    #corpus = [['computer', 'medical', 'DM', 'algorithm', 'drug', 'computer'],
+    #          ['computer', 'AI', 'DM', 'algorithm'],
+    #          ['art', 'beauty', 'architectural'],
+    #          ['drug', 'medical', 'hospital']]
+    #authors = [['Tom', 'Amy'], ['Tom'], ['Ward'], ['Amy']]
+    dpre = preprocessing(corpus=read_cases_manualATM_text_list, authors=authors_per_doc_lol)
+    print('done with preprocessing')
+
     model = ATM(dpre, K=flags.num_topics, max_iter=100)
     #print('initial model.theta:', model.theta)
     #print('initial model.phi:', model.phi)
@@ -361,5 +405,3 @@ if __name__ == '__main__':
     #print('authors:', authors)
     model.print_topics_per_doc()
     model.print_authors_per_doc()
-    '''
-
