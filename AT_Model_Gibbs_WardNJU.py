@@ -326,7 +326,8 @@ class ATM(object):
 
 
 
-    def print_authors_per_doc(self, topN=8):
+    #def print_authors_per_doc(self, topN=8):
+    def print_authors_per_doc(self, topN=3):
         authors_prob_per_doc_all = {} #dict of dict
         for m in range(self.dpre.docs_count):
             a_doc = self.A_assigment[m]
