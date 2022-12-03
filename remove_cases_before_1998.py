@@ -6,7 +6,8 @@ for idx, row in updated_df.iterrows():
     if len(row['participating_judges']) < 3 or len(row['full_text']) < 3:
         updated_df = updated_df.drop(idx)
 #Remove less important columns to mitigate the effect of dropping rows with any empty entries
-updated_df.drop(columns=['senate_and_chamber', 'short_description', 'decision'], axis=1, inplace=True)
+#updated_df.drop(columns=['senate_and_chamber', 'short_description', 'decision'], axis=1, inplace=True)
+updated_df.drop(columns=['senate_and_chamber', 'decision'], axis=1, inplace=True)
 #Remove any row that contains an empty entry, e.g. authors, full_text
 updated_df.dropna(axis=0, how='any', inplace=True)
 #updated_df.to_csv('case_scraping_01_1998_to_07_2022.csv', index=False)
