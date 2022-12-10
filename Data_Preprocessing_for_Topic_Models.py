@@ -103,7 +103,7 @@ def read_cases(filename, limit=-1):
     else:
         df_full_text = pd.read_csv(filename, usecols=col_list)
 
-    df_full_text.dropna(axis=0, how='any', inplace=True)
+    #df_full_text.dropna(axis=0, how='any', inplace=True)
 
     df_full_text['full_text'] = df_full_text['full_text'].apply(lemmatization)
     df_full_text['full_text'] = df_full_text['full_text'].apply(clean_text)
@@ -155,10 +155,10 @@ def read_cases_manualATM(filename, limit=-1):
     #print('text_list after lemmatization:', text_list)
 
     #with open('toy_read_cases_manualATM_text_list.json', 'w') as f:
-    with open('read_cases_manualATM_text_list.json', 'w') as f:
+    with open('read_cases_manualATM_text_list_Dec04.json', 'w') as f:
       json.dump(text_list, f)
     #with open('toy_read_cases_manualATM_text_list.json', 'r') as f:
-    with open('read_cases_manualATM_text_list.json', 'r') as f:
+    with open('read_cases_manualATM_text_list_Dec04.json', 'r') as f:
       text_list = json.load(f)
 
     print('text_list:', text_list)
@@ -167,7 +167,7 @@ def read_cases_manualATM(filename, limit=-1):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Fit AT on court cases")
-    parser.add_argument('--cases_source', type=str, default="case_scraping_01_1998_to_07_2022_noNaN.csv")
+    parser.add_argument('--cases_source', type=str, default="case_scraping_01_1998_to_12_2022_noNaN.csv")
     #parser.add_argument('--cases_source', type=str, default="toy1.csv")
     flags = parser.parse_args()
 
