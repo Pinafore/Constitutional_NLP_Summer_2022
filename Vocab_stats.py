@@ -5,13 +5,13 @@ import numpy as np
 import csv
 import pandas as pd
 
-def Vocab_by_freq(file_name):
+def Vocab_by_freq(file_name, lower_Vocab_count_threshold=0):
     with open(file_name, 'r') as f:
         read_cases_manualATM_text_list = json.load(f)
     read_cases_manualATM_text_list_flat = [item for sublist in read_cases_manualATM_text_list for item in sublist]
     #print('read_cases_manualATM_text_list_flat:', read_cases_manualATM_text_list_flat)
     Vocab = Counter(read_cases_manualATM_text_list_flat)
-    sorted_Vocab = {k: v for k, v in sorted(Vocab.items(), key=lambda item: item[1], reverse=True) if v > 0}
+    sorted_Vocab = {k: v for k, v in sorted(Vocab.items(), key=lambda item: item[1], reverse=True) if v > lower_Vocab_count_threshold}
 
     tf_corpus_dict = {k: v/len(read_cases_manualATM_text_list_flat) for k, v in sorted_Vocab.items()}
     print("len(read_cases_manualATM_text_list_flat):", len(read_cases_manualATM_text_list_flat))
@@ -117,7 +117,9 @@ def export_stats_to_csv():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Get the vocabulary sorted by frequency")
     parser.add_argument('--file_name', type=str, default="read_cases_manualATM_text_list_Dec04.json")
+    parser.add_argument('--lower_Vocab_count_threshold', type=int, default=0)
+
     flags = parser.parse_args()
 
-    Vocab_by_freq(flags.file_name)
+    Vocab_by_freq(flags.file_name, flags.lower_Vocab_count_threshold)
     export_stats_to_csv()
