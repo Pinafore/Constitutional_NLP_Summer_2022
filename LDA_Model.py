@@ -106,35 +106,32 @@ if __name__ == "__main__":
   
   flags = parser.parse_args()
   
-  dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
+  #dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
 
   # Save and Load
   import pickle
 
-
+  '''
   with open('read_cases_dictionary.json', 'wb') as f:
       pickle.dump(dictionary, f)
   with open('read_cases_cases.json', 'wb') as f:
       pickle.dump(cases, f)
-
-
+  '''
   with open('read_cases_dictionary.json', 'rb') as f:
       dictionary = pickle.load(f)
   with open('read_cases_cases.json', 'rb') as f:
       cases = pickle.load(f)
 
   #Save cases (corpora)
-
+  '''
   corpora_file = open("corpora.txt", "w")
   n = corpora_file.write(str(cases))
   corpora_file.close()
+  '''
 
-
-  #model = fit_model(dictionary, cases, output_filename="lda_model_num_topics=" + str(flags.num_topics) + ".save", num_topics=flags.num_topics)
+  model = fit_model(dictionary, cases, output_filename="lda_model_num_topics=" + str(flags.num_topics) + ".save", num_topics=flags.num_topics)
   
   model = load_model(filename="lda_model_num_topics=" + str(flags.num_topics) + ".save")
   
-  #topics_file = output_topics(model, num_topics = flags.num_topics)
-  #topic_distribution_per_doc_file =  output_doc_topic_distribution(model, doc_term_matrix=cases, num_topics = flags.num_topics)
   words_per_topic_dict = output_topics(model, num_topics = flags.num_topics)
   topics_per_doc_dict =  output_doc_topic_distribution(model, doc_term_matrix=cases, num_topics = flags.num_topics)
