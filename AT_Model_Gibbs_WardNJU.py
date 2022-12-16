@@ -93,9 +93,9 @@ class ATM(object):
         self.atsum = self.at.sum(axis=1)
         self.twsum = self.tw.sum(axis=1)
 
-        self.Z_assigment = np.array([[0 for y in range(len(self.dpre.docs[x]))] for x in
+        self.Z_assignment = np.array([[0 for y in range(len(self.dpre.docs[x]))] for x in
                                      range(self.dpre.docs_count)])  # topic assignment for each word for each doc
-        self.A_assigment = np.array([[0 for y in range(len(self.dpre.docs[x]))] for x in
+        self.A_assignment = np.array([[0 for y in range(len(self.dpre.docs[x]))] for x in
                                      range(self.dpre.docs_count)])  # author assignment for each word for each doc
 
         # output var:
@@ -127,8 +127,8 @@ class ATM(object):
                 self.atsum[a] += 1
                 self.tw[k, self.dpre.docs[m][n]] += 1
                 self.twsum[k] += 1
-                self.Z_assigment[m][n] = k
-                self.A_assigment[m][n] = a
+                self.Z_assignment[m][n] = k
+                self.A_assignment[m][n] = a
 
         print('init finish:', datetime.now())
 
@@ -152,8 +152,8 @@ class ATM(object):
 
     @jit
     def sample(self, m, n):
-        old_topic = self.Z_assigment[m][n]
-        old_author = self.A_assigment[m][n]
+        old_topic = self.Z_assignment[m][n]
+        old_author = self.A_assignment[m][n]
         word = self.dpre.docs[m][n]
         authors_set = self.dpre.authors[m]
 
@@ -195,10 +195,10 @@ class ATM(object):
         self.atsum[new_author] += 1
         self.tw[new_topic, word] += 1
         self.twsum[new_topic] += 1
-        self.Z_assigment[m][n] = new_topic
-        self.A_assigment[m][n] = new_author
-        #print('self.Z_assigment:', self.Z_assigment)
-        #print('self.A_assigment:', self.A_assigment)
+        self.Z_assignment[m][n] = new_topic
+        self.A_assignment[m][n] = new_author
+        #print('self.Z_assignment:', self.Z_assignment)
+        #print('self.A_assignment:', self.A_assignment)
 
     @jit
     def updateEstimatedParameters(self):
@@ -207,7 +207,7 @@ class ATM(object):
         for k in range(self.K):
             self.phi[k] = (self.tw[k] + self.beta) / (self.twsum[k] + self.beta * self.V)
 
-    def print_tw(self, topN=10):
+    def print_tw(self, topN=1000):
         topics = {}
         for k in range(self.K):
             topic = []
@@ -215,7 +215,8 @@ class ATM(object):
             for ix in index:
                 prob = ("%.3f" % self.phi[k, ix])
                 word = self.dpre.id2word[ix]
-                topic.append((prob, word))
+                #topic.append((prob, word))
+                topic.append(word)
             #topics.append(topic)
             topics[k] = topic
         '''
@@ -285,7 +286,7 @@ class ATM(object):
     def print_topics_per_doc(self, topN=3):
         topics_prob_per_doc_all = {} #dict of dict
         for m in range(self.dpre.docs_count):
-            z_doc = self.Z_assigment[m]
+            z_doc = self.Z_assignment[m]
             #print('z_doc:', z_doc)
             z_keys, z_counts = np.array(list(Counter(z_doc).keys())), np.array(list(Counter(z_doc).values()))
             z_probs = np.array([round(z_count/sum(z_counts),2) for z_count in z_counts])
@@ -326,11 +327,11 @@ class ATM(object):
 
 
 
-    #def print_authors_per_doc(self, topN=8):
-    def print_authors_per_doc(self, topN=3):
+    def print_authors_per_doc(self, topN=8):
+    #def print_authors_per_doc(self, topN=3):
         authors_prob_per_doc_all = {} #dict of dict
         for m in range(self.dpre.docs_count):
-            a_doc = self.A_assigment[m]
+            a_doc = self.A_assignment[m]
             print('a_doc:', a_doc)
             a_keys, a_counts = np.array(list(Counter(a_doc).keys())), np.array(list(Counter(a_doc).values()))
             a_keys = np.array([self.dpre.id2author[a] for a in a_keys])
@@ -340,11 +341,13 @@ class ATM(object):
             print('a_probs:', a_probs)
             if len(a_counts) > topN:
                 top_indices = a_counts.argsort()[::-1][:topN]
-                print('top_indices:', top_indices)
-                a_keys = a_keys[top_indices]
-                a_probs = a_probs[top_indices]
-                print('top a_keys:', a_keys)
-                print('top a_probs:', a_probs)
+            else:
+                top_indices = a_counts.argsort()[::-1]
+            print('top_indices:', top_indices)
+            a_keys = a_keys[top_indices]
+            a_probs = a_probs[top_indices]
+            print('top a_keys:', a_keys)
+            print('top a_probs:', a_probs)
             author_prob_per_doc_dict = {}
             for idx in range(len(a_keys)):
                 author_prob_per_doc_dict[str(a_keys[idx])] = a_probs[idx]
@@ -372,7 +375,7 @@ class ATM(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Implement AT Model with Gibbs")
-    parser.add_argument('--num_topics', type=int, default=100)
+    parser.add_argument('--num_topics', type=int, default=50)
 
     flags = parser.parse_args()
 
@@ -393,16 +396,60 @@ if __name__ == '__main__':
     model = ATM(dpre, K=flags.num_topics, max_iter=100)
     #print('initial model.theta:', model.theta)
     #print('initial model.phi:', model.phi)
-    #print('initial model.Z_assigment:', model.Z_assigment)
-    #print('initial model.A_assigment:', model.A_assigment)
+    #print('initial model.Z_assignment:', model.Z_assignment)
+    #print('initial model.A_assignment:', model.A_assignment)
     model.inferenceModel()
     #print('model.theta:', model.theta)
     #print('model.phi:', model.phi)
-    #print('final model.Z_assigment:', model.Z_assigment)
-    #print('final model.A_assigment:', model.A_assigment)
+    #print('final model.Z_assignment:', model.Z_assignment)
+    #print('final model.A_assignment:', model.A_assignment)
     topics = model.print_tw()
     #print('topics:', topics)
     authors = model.print_at()
     #print('authors:', authors)
     model.print_topics_per_doc()
     model.print_authors_per_doc()
+
+    Z_assignment = model.Z_assignment
+    A_assignment = model.A_assignment
+    theta = model.theta
+    phi = model.phi
+
+    with open('WardNJU_Z_assignment_num_topics=' + str(flags.num_topics) + '.json', 'wb') as f:
+        pickle.dump(Z_assignment, f)
+
+    with open('WardNJU_Z_assignment_num_topics=' + str(flags.num_topics) + '.json', 'rb') as f:
+        Z_assignment = pickle.load(f)
+
+    with open('WardNJU_Z_assignment_num_topics=' + str(flags.num_topics) + '.txt', "w") as f:
+        n = f.write(str(Z_assignment))
+
+
+    with open('WardNJU_A_assignment_num_topics=' + str(flags.num_topics) + '.json', 'wb') as f:
+        pickle.dump(A_assignment, f)
+
+    with open('WardNJU_A_assignment_num_topics=' + str(flags.num_topics) + '.json', 'rb') as f:
+        A_assignment = pickle.load(f)
+
+    with open('WardNJU_A_assignment_num_topics=' + str(flags.num_topics) + '.txt', "w") as f:
+        n = f.write(str(A_assignment))
+
+
+    with open('WardNJU_theta_num_topics=' + str(flags.num_topics) + '.json', 'wb') as f:
+        pickle.dump(theta, f)
+
+    with open('WardNJU_theta_num_topics=' + str(flags.num_topics) + '.json', 'rb') as f:
+        theta = pickle.load(f)
+
+    with open('WardNJU_theta_num_topics=' + str(flags.num_topics) + '.txt', "w") as f:
+        n = f.write(str(theta))
+
+
+    with open('WardNJU_phi_num_topics=' + str(flags.num_topics) + '.json', 'wb') as f:
+        pickle.dump(phi, f)
+
+    with open('WardNJU_phi_num_topics=' + str(flags.num_topics) + '.json', 'rb') as f:
+        phi = pickle.load(f)
+
+    with open('WardNJU_phi_num_topics=' + str(flags.num_topics) + '.txt', "w") as f:
+        n = f.write(str(phi))

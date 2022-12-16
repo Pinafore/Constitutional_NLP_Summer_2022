@@ -1,23 +1,9 @@
 import csv
 from pandas import *
 import pickle
-topic_to_domain_dict = {0:"dm2_european", 2:"dm_speech", 4:"dm2_reinstatement", 7:"dm_levies", 9:"dm_professions",
-                        14:"dm2_parliament", 15:"dm_child", 18:"dm_labour", 19:"dm_healthinsurance", 20:"dm_welfare",
-                        23:"dm2_asylum", 24:"dm_family", 25:"dm_tax", 26:"dm2_international", 27:"dm_freedomgeneral",
-                        28:"dm_socialsecurity", 30:"dm_property", 31:"dm2_european", 32:"dm_healthinsurance",
-                        33:"dm2_extradition", 37:"dm2_parliament", 40:"dm2_pretrial", 41:"dm_labour", 42:"dm2_prosecution",
-                        45:"dm2_publicservice", 46:"dm2_detention", 47:"dm_labour", 48:"dm2_detention", 49:"dm_property"}
-
-
-num_topics = 50
-#Create a list of list for the top 3 topics of each document
-with open('WardNJU_topics_per_doc_num_topics=' + str(num_topics) + '.json', 'rb') as f:
-    topics_prob_per_doc_all = pickle.load(f)
-
-#Create a topics_prob_per_doc dictionary where keys are bverfg_id_forward
-
-
-# open the file in read mode
+import json
+import argparse
+from statistics import stdev, median_high
 
 
 '''
@@ -37,18 +23,16 @@ data_compact.to_csv("id_and_domains_Aug01.csv")
 '''
 
 
-
-data_compact = read_csv("id_and_domains_Aug01.csv")
 #print("data_compact:", data_compact)
 
-def recall_and_precision(dm):
+def recall_and_precision(dm, topic_to_domain_dict, data_compact, topics_prob_per_doc_all):
 #Function to calculate recall and precision for each dm variable
     print('dm:', dm)
     topics_corresponding_to_dm = []
     for k, v in topic_to_domain_dict.items():
         #print('v', v)
         if v == dm:
-            topics_corresponding_to_dm  += [k]
+            topics_corresponding_to_dm  += [int(k)]
     #print('topics_corresponding_to_dm :', topics_corresponding_to_dm )
 
 
@@ -64,7 +48,7 @@ def recall_and_precision(dm):
         #print('ATM_topics:', ATM_topics)
         intersection = list(set(topics_corresponding_to_dm).intersection(set(ATM_topics)))
         #print('intersection:', intersection)
-
+        #print('row[dm]:', row[dm])
         if row[dm] == 1:
             if len(intersection) > 0:
                 true_pos += 1
@@ -74,21 +58,17 @@ def recall_and_precision(dm):
             if len(intersection) > 0:
                 false_pos += 1
 
-    recall = true_pos/(true_pos+false_neg)
-    precision = true_pos/(true_pos+false_pos)
+    recall = true_pos/(true_pos+false_neg+0.000001)
+    precision = true_pos/(true_pos+false_pos+0.000001)
     #print('true_pos:', true_pos)
     #print('false_neg:', false_neg)
     #print('false_pos:', false_pos)
     print('recall:', recall)
     print('precision:', precision)
 
-    return recall, precision
+    return dm, recall, precision
 
 
-
-
-for dm in set(topic_to_domain_dict.values()):
-    recall_and_precision(dm)
 
 
 #true_pos = cases with dm_env = 1 and topic = 10 (because topic 10 -> dm_env)
@@ -105,9 +85,103 @@ for dm in set(topic_to_domain_dict.values()):
 #If no, add one to false_neg
 
 
-
 #recall = true_pos / (true_pos + false_neg)
 
 #Procedure to calculate the precision of each topics = 10 -> dm_environmental
 
 #precision = true_pos / (true_pos + false_pos)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Calculate recall and precision per domain")
+    parser.add_argument('--num_topics', type=int, default=50)
+    parser.add_argument('--map', type=str, default="automatic")
+
+    flags = parser.parse_args()
+
+
+    if flags.map == "automatic":
+        with open('automatic_topic_to_domain_map_num_topics=' + str(flags.num_topics) + '.json', 'r') as f:
+            topic_to_domain_dict = json.load(f)
+        print('topic_to_domain_dict:', topic_to_domain_dict)
+    elif flags.map == "manual" and flags.num_topics == 50:
+        #Manual Map (num_topics = 50)
+        topic_to_domain_dict = {0: "dm2_european", 2: "dm_speech", 4: "dm2_reinstatement", 7: "dm_levies",
+                                9: "dm_professions",
+                                14: "dm2_parliament", 15: "dm_child", 18: "dm_labour", 19: "dm_healthinsurance",
+                                20: "dm_welfare",
+                                23: "dm2_asylum", 24: "dm_family", 25: "dm_tax", 26: "dm2_international",
+                                27: "dm_freedomgeneral",
+                                28: "dm_socialsecurity", 30: "dm_property", 31: "dm2_european", 32: "dm_healthinsurance",
+                                33: "dm2_extradition", 37: "dm2_parliament", 40: "dm2_pretrial", 41: "dm_labour",
+                                42: "dm2_prosecution",
+                                45: "dm2_publicservice", 46: "dm2_detention", 47: "dm_labour", 48: "dm2_detention",
+                                49: "dm_property"}
+
+
+
+    # Create a list of list for the top 3 topics of each document
+    with open('WardNJU_topics_per_doc_num_topics=' + str(flags.num_topics) + '.json', 'rb') as f:
+        topics_prob_per_doc_all = pickle.load(f)
+ 
+    data_compact = read_csv("id_and_domains_Aug01.csv")
+
+    dm_list = []
+    recall_list = []
+    precision_list = []
+
+    for dm in set(topic_to_domain_dict.values()):
+        dm, recall, precision = recall_and_precision(dm, topic_to_domain_dict, data_compact, topics_prob_per_doc_all)
+        dm_list.append(dm)
+        recall_list.append(recall)
+        precision_list.append(precision)
+
+    #print('dm_list:', dm_list)
+    #rint('recall_list:', recall_list)
+    #print('precision_list:', precision_list)
+
+    recall_med = median_high(recall_list) 
+    print('recall_med:', recall_med)
+    recall_med_idx = recall_list.index(recall_med)
+    dm_recall_med = dm_list[recall_med_idx]
+    print('dm_recall_med:', dm_recall_med)
+
+    precision_med = median_high(precision_list)
+    print('precision_med:', precision_med)
+    precision_med_idx = precision_list.index(precision_med)
+    dm_precision_med = dm_list[precision_med_idx]
+    print('dm_precision_med:', dm_precision_med)
+
+
+    recall_max = max(recall_list)
+    print('recall_max:', recall_max)
+    recall_max_idx = recall_list.index(recall_max)
+    dm_recall_max = dm_list[recall_max_idx]
+    print('dm_recall_max:', dm_recall_max)
+
+
+    precision_max = max(precision_list)
+    print('precision_max:', precision_max)
+    precision_max_idx = precision_list.index(precision_max)
+    dm_precision_max = dm_list[precision_max_idx]
+    print('dm_precision_max:', dm_precision_max)
+
+    recall_min = min(recall_list)
+    print('recall_min:', recall_min)
+    recall_min_idx = recall_list.index(recall_min)
+    dm_recall_min = dm_list[recall_min_idx]
+    print('dm_recall_min:', dm_recall_min)
+
+    precision_min = min(precision_list)
+    print('precision_min:', precision_min)
+    precision_min_idx = precision_list.index(precision_min)
+    dm_precision_min = dm_list[precision_min_idx]
+    print('dm_precision_min:', dm_precision_min)
+
+
+
+    #with open('recall_and_precision_' + str(flags.map) + '_num_topics=' + str(num_topics) + '.json', 'w') as f:
+    #   json.dump(automatic_topic_to_domain_map, f)
+
+    #with open('recall_and_precision_' + str(flags.map) + '_num_topics=' + str(num_topics) + '.json', 'r') as f:
+    #    automatic_topic_to_domain_map = json.load(f)
