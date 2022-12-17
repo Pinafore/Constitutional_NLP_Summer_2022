@@ -4,7 +4,7 @@ import pickle
 import json
 import argparse
 from statistics import stdev, median_high
-
+import numpy as np
 
 '''
 # Construct a compact csv with only id (0-8111) and domains
@@ -44,9 +44,12 @@ def recall_and_precision(dm, topic_to_domain_dict, data_compact, topics_prob_per
     false_pos = 0
     for index, row in df.iterrows():
         id = row['id']
-        ATM_topics = [int(topic) for topic in topics_prob_per_doc_all[id].keys()]
+        #print('id:', id)
+        #print('topics_prob_per_doc_all:', topics_prob_per_doc_all)
+        LDA_topics = topics_prob_per_doc_all[str(id)]
+        #print('LDA_topics:', LDA_topics)
         #print('ATM_topics:', ATM_topics)
-        intersection = list(set(topics_corresponding_to_dm).intersection(set(ATM_topics)))
+        intersection = list(set(topics_corresponding_to_dm).intersection(set(LDA_topics)))
         #print('intersection:', intersection)
         #print('row[dm]:', row[dm])
         if row[dm] == 1:
@@ -101,28 +104,17 @@ if __name__ == '__main__':
 
 
     if flags.map == "automatic":
-        with open('automatic_topic_to_domain_map_num_topics=' + str(flags.num_topics) + '.json', 'r') as f:
+        with open('LDA_automatic_topic_to_domain_map_num_topics=' + str(flags.num_topics) + '.json', 'r') as f:
             topic_to_domain_dict = json.load(f)
         print('topic_to_domain_dict:', topic_to_domain_dict)
-    elif flags.map == "manual" and flags.num_topics == 50:
-        #Manual Map (num_topics = 50)
-        topic_to_domain_dict = {0: "dm2_european", 2: "dm_speech", 4: "dm2_reinstatement", 7: "dm_levies",
-                                9: "dm_professions",
-                                14: "dm2_parliament", 15: "dm_child", 18: "dm_labour", 19: "dm_healthinsurance",
-                                20: "dm_welfare",
-                                23: "dm2_asylum", 24: "dm_family", 25: "dm_tax", 26: "dm2_international",
-                                27: "dm_freedomgeneral",
-                                28: "dm_socialsecurity", 30: "dm_property", 31: "dm2_european", 32: "dm_healthinsurance",
-                                33: "dm2_extradition", 37: "dm2_parliament", 40: "dm2_pretrial", 41: "dm_labour",
-                                42: "dm2_prosecution",
-                                45: "dm2_publicservice", 46: "dm2_detention", 47: "dm_labour", 48: "dm2_detention",
-                                49: "dm_property"}
-
 
 
     # Create a list of list for the top 3 topics of each document
-    with open('WardNJU_topics_per_doc_num_topics=' + str(flags.num_topics) + '.json', 'rb') as f:
-        topics_prob_per_doc_all = pickle.load(f)
+    #with open('WardNJU_topics_per_doc_num_topics=' + str(flags.num_topics) + '.json', 'rb') as f:
+    #    topics_prob_per_doc_all = pickle.load(f)
+    with open('LDA_formatted_topics_per_doc_num_topics=' + str(flags.num_topics) + '.json', 'r') as f:
+        topics_prob_per_doc_all = json.load(f)
+
  
     data_compact = read_csv("id_and_domains_Aug01.csv")
 
