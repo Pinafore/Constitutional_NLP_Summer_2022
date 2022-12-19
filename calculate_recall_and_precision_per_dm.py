@@ -3,7 +3,7 @@ from pandas import *
 import pickle
 import json
 import argparse
-from statistics import stdev, median_high
+import numpy as np
 
 
 '''
@@ -27,7 +27,7 @@ data_compact.to_csv("id_and_domains_Aug01.csv")
 
 def recall_and_precision(dm, topic_to_domain_dict, data_compact, topics_prob_per_doc_all):
 #Function to calculate recall and precision for each dm variable
-    print('dm:', dm)
+    #print('dm:', dm)
     topics_corresponding_to_dm = []
     for k, v in topic_to_domain_dict.items():
         #print('v', v)
@@ -54,9 +54,28 @@ def recall_and_precision(dm, topic_to_domain_dict, data_compact, topics_prob_per
                 true_pos += 1
             else:
                 false_neg += 1
+                #At num_topics = 200, print the false neg examples corresponding to the highest-recall domain (dm_family)
+                '''
+                if dm == 'dm_family': #
+                    print('false_neg id:', id)
+                    print('false_neg dm:', dm)
+                    for k, v in topic_to_domain_dict.items():
+                    # print('v', v)
+                        if v == dm:
+                            print('topic corresponding to dm_family:', k)
+                '''
         elif row[dm] == 0:
             if len(intersection) > 0:
                 false_pos += 1
+                # At num_topics = 200, print the false pos examples corresponding to the highest-precision domain (dm2_military)
+                if dm == 'dm2_military': #
+                    print('false_pos id:', id)
+                    print('false_pos dm:', dm)
+                    for k, v in topic_to_domain_dict.items():
+                        if v == dm:
+                            print('topic corresponding to dm2_military:', k)
+
+
 
     recall = true_pos/(true_pos+false_neg+0.000001)
     precision = true_pos/(true_pos+false_pos+0.000001)

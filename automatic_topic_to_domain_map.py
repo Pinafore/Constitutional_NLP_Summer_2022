@@ -46,14 +46,25 @@ def find_first_matched_dm(topic, topwords, topword_index, dm_keywords_dict, auto
         for dm, keywords in dm_keywords_dict.items():
             for keyword in keywords:
                 if word_match(topword, keyword):
+                    automatic_topic_to_domain_map[topic] = dm
+                    '''
                     print('topic:', topic)
                     print('dm:', dm)
                     print('topword:', topword)
                     print('keyword:', keyword)
                     print('topword_index:', topword_index)
                     print('before automatic_topic_to_domain_map:', automatic_topic_to_domain_map)
-                    automatic_topic_to_domain_map[topic] = dm
                     print('after automatic_topic_to_domain_map:', automatic_topic_to_domain_map)
+                    '''
+
+                    #See at which topword_index is there a match for the two domains of highest recall (dm_family) and precision (dm2_military)
+                    if dm == 'dm_family' or dm == 'dm2_military':
+                        print('dm:', dm)
+                        print('topic:', topic)
+                        print('topword:', topword)
+                        print('keyword:', keyword)
+                        print('topword_index:', topword_index)
+
                     return automatic_topic_to_domain_map
     #still have to return sth (the same dict with no modification) if cant find a match among the 1000 top words
     return automatic_topic_to_domain_map
