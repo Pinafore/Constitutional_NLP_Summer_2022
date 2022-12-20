@@ -57,8 +57,8 @@ def find_first_matched_dm(topic, topwords, topword_index, dm_keywords_dict, auto
                     print('after automatic_topic_to_domain_map:', automatic_topic_to_domain_map)
                     '''
 
-                    #See at which topword_index is there a match for the two domains of highest recall (dm_family) and precision (dm2_military)
-                    if dm == 'dm_family' or dm == 'dm2_military':
+                    #See at which topword_index is there a match for the two domains of highest recall (dm_family) and precision (dm2_asylum)
+                    if dm == 'dm_family' or dm == 'dm2_asylum':
                         print('dm:', dm)
                         print('topic:', topic)
                         print('topword:', topword)
