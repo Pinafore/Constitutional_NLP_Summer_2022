@@ -362,27 +362,28 @@ class ATM(object):
                 authors_prob_per_doc_all = json.load(f)
             '''
 
-            with open('WardNJU_authors_per_doc_num_topics=' + str(self.K) + '.json', 'wb') as f:
+            with open('WardNJU_authors_per_doc' + '_topN=' + str(topN) + '_num_topics=' + str(self.K) + '.json', 'wb') as f:
                 pickle.dump(authors_prob_per_doc_all, f)
 
-            with open('WardNJU_authors_per_doc_num_topics=' + str(self.K) + '.json', 'rb') as f:
+            with open('WardNJU_authors_per_doc' + '_topN=' + str(topN) + '_num_topics=' + str(self.K) + '.json', 'rb') as f:
                 authors_prob_per_doc_all = pickle.load(f)
 
-            with open('WardNJU_authors_per_doc_num_topics=' + str(self.K) + '.txt', "w") as f:
+            with open('WardNJU_authors_per_doc' + '_topN=' + str(topN) + '_num_topics=' + str(self.K) + '.txt', "w") as f:
                 n = f.write(str(authors_prob_per_doc_all))
 
             print('authors_prob_per_doc_all:', authors_prob_per_doc_all)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Implement AT Model with Gibbs")
-    parser.add_argument('--num_topics', type=int, default=50)
+    parser.add_argument('--num_topics', type=int, default=100)
 
     flags = parser.parse_args()
 
-    with open('authors_per_doc_lol.json', 'r') as f:
+    with open('authors_per_doc_lol_bverfg230107.json', 'r') as f:
         authors_per_doc_lol = json.load(f)
 
-    with open('read_cases_manualATM_text_list.json', 'r') as f:
+    #with open('read_cases_manualATM_text_list.json', 'r') as f:
+    with open('read_cases_manualATM_text_list_bverfg230107.json', 'r') as f:
         read_cases_manualATM_text_list = json.load(f)
 
     #corpus = [['computer', 'medical', 'DM', 'algorithm', 'drug', 'computer'],
@@ -409,6 +410,8 @@ if __name__ == '__main__':
     #print('authors:', authors)
     model.print_topics_per_doc()
     model.print_authors_per_doc()
+    #Save the highest-probability judge per doc
+    model.print_authors_per_doc(topN=1)
 
     Z_assignment = model.Z_assignment
     A_assignment = model.A_assignment

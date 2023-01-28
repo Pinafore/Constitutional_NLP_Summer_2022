@@ -81,8 +81,8 @@ def clean_author2doc(file_uncleaned):
 
 
 if __name__ == "__main__":
-    json_cleaned = clean_author2doc("author2doc_01_1998_to_07_2022_noNaN.json")
-    with open('clean_author2doc_01_1998_to_07_2022_noNaN.json', 'w') as f:
+    json_cleaned = clean_author2doc("author2doc_bverfg230107.json")
+    with open('clean_author2doc_bverfg230107.json', 'w') as f:
         json.dump(json_cleaned, f)
 
 

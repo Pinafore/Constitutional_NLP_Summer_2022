@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-with open('clean_author2doc_01_1998_to_07_2022_noNaN.json', 'r') as f:
+with open('clean_author2doc_bverfg230107.json', 'r') as f:
     author2doc = json.load(f)
 print('author2doc:', author2doc)
 
@@ -30,9 +30,9 @@ for key in sorted(doc2author.keys()):
 print('authors_per_doc_lol:', authors_per_doc_lol)
 print('len(authors_per_doc_lol):', len(authors_per_doc_lol))
 
-with open('authors_per_doc_lol.json', 'w') as f:
+with open('authors_per_doc_lol_bverfg230107.json', 'w') as f:
     json.dump(authors_per_doc_lol, f)
-with open('authors_per_doc_lol.json', 'r') as f:
+with open('authors_per_doc_lol_bverfg230107.json', 'r') as f:
     authors_per_doc_lol = json.load(f)
 
 print('len(authors_per_doc_lol):', len(authors_per_doc_lol))
