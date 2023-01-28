@@ -51,9 +51,9 @@ Link of raw data (before scraping) to compare approx case id with year (note: sm
 
 
 Code Pipeline:
-remove_irrelevant_cases.py
-Data_Preprocessing_for_Topic_Models.py
-Generate_author2doc.py
-Clean_author2doc.py
-Convert_author2doc_to_lol.py
-AT_Model_Gibbs_WardNJU.py
+-> remove_irrelevant_cases.py
+-> Data_Preprocessing_for_Topic_Models.py
+-> Generate_author2doc.py
+-> Clean_author2doc.py
+-> Convert_author2doc_to_lol.py
+-> AT_Model_Gibbs_WardNJU.py
