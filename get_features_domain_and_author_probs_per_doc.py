@@ -24,6 +24,8 @@ doc_num = len(topics_prob_per_doc_all)
 print('doc_num:', doc_num)
 
 additional_features_dict = {'uid':range(doc_num)}
+#additional_domain_features_dict = {'uid':range(doc_num)}
+#additional_author_features_dict = {}
 
 
 with open('automatic_topic_to_domain_map_num_topics=' + str(num_topics) + '.json', 'r') as f:
@@ -96,12 +98,57 @@ for author in unique_author_list:
 
     additional_features_dict[col_name] = author_prob_list
 
+
+with open('WardNJU_authors_per_doc_topN=1_num_topics=' + str(num_topics) + '.json', 'rb') as f:
+    top_author_prob_per_doc = pickle.load(f)
+print('len top_author_prob_per_doc:', len(top_author_prob_per_doc))
+
+top_author_list = []
+top_prob_list = []
+
+for doc_id in top_author_prob_per_doc.keys():
+    top_author_prob_for_doc_id = top_author_prob_per_doc[doc_id]
+
+    #top_author_list += [str(top_author_prob_for_doc_id.keys())]
+    #top_prob_list += [top_author_prob_for_doc_id.values()]
+
+    
+    if len(top_author_prob_for_doc_id.keys()) > 0:
+        top_author_list += top_author_prob_for_doc_id.keys()
+    else:
+        top_author_list += [np.nan]
+    
+    if len(top_author_prob_for_doc_id.values()) > 0:
+        top_prob_list += top_author_prob_for_doc_id.values()
+    else:
+        top_prob_list += [np.nan]
+
+
+#print('top_author_list:', top_author_list)
+#print('top_prob_list:', top_prob_list)
+print('len top_author_list:', len(top_author_list))
+print('len top_prob_list:', len(top_prob_list))
+
+additional_features_dict['top_author'] = top_author_list
+additional_features_dict['top_prob'] = top_prob_list
+
+'''
 #Find the highest-probability judge (referee)
-#col_name = 'highest_prob_judge'
+df_additional_author_features = pd.DataFrame(additional_author_features_dict)
+col_name = 'highest_prob_judge'
+df_highest_prob_judge = df_additional_author_features.idxmax(axis="columns")
+df_highest_prob_judge = pd.DataFrame(df_highest_prob_judge)
+df_highest_prob_judge['uid'] = range(doc_num)
+print('df_highest_prob_judge:', df_highest_prob_judge)
 #for doc_id in range(doc_num):
+#    df.idxmax(axis="columns")
+
+
+'''
 
 
 
+#additional_features_dict = additional_domain_features_dict + additional_author_features_dict
 
 additional_features = additional_features_dict.keys()
 print('additional_features:', additional_features)
