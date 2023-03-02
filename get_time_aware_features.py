@@ -8,8 +8,19 @@ import pickle
 
 from difflib import SequenceMatcher
 
-def similar(a, b):
-    return SequenceMatcher(None, a, b).ratio()
+
+def clean_german_chars(string: str) -> str:
+
+    tpl: tuple = (
+        ('ü', "ue"), ('Ü', "Ue"), ('ä', "ae"), ('Ä', "Ae"), ("ö", "oe"),
+        ('Ö', "Oe"), ('ß', "ss")
+    )
+
+    for item1, item2 in tpl:
+        string = string.replace(item1, item2)
+
+    return string
+
 
 def get_dict_of_dict_time_judge_domain(file_name):
     df = pd.read_csv(file_name, skiprows=[0])
@@ -42,8 +53,11 @@ def get_dict_of_dict_time_judge_domain(file_name):
             #print('judge:', judge)
             #print('type(judge):', type(judge))
             if not (pd.isna(domain) or pd.isna(judge)):
-                dict_of_dict_time_judge_domain[begin_end_tuple][judge.lower()] = domain
-
+                judge = clean_german_chars(judge.lower())
+                if judge not in dict_of_dict_time_judge_domain[begin_end_tuple]:
+                    dict_of_dict_time_judge_domain[begin_end_tuple][judge] = [domain] #bug (cannot afford judges with multiple domains)
+                else:
+                    dict_of_dict_time_judge_domain[begin_end_tuple][judge] += [domain]
     #print('dict_of_dict_time_judge_domain:', dict_of_dict_time_judge_domain)
 
     return dict_of_dict_time_judge_domain
@@ -93,16 +107,17 @@ for row_index, row in df.iterrows():
             case_authors = case_authors.replace("'", "") #remove the quote (') characters from the string ,e.g. 'seidl' -> seidl
             #print('case_authors:', case_authors)
             period_author_domain_dict = dict_of_dict_time_judge_domain[begin_end_tuple]
-            print('period_author_domain_dict:', period_author_domain_dict)
+            #print('period_author_domain_dict:', period_author_domain_dict)
             for case_author in case_authors[1:-1].split(', '):
-                print('case_author:', case_author)
+                #print('case_author:', case_author)
                 if case_author in period_author_domain_dict:
-                    print('relevant case_author:', case_author)
-                    relevant_domain = period_author_domain_dict[case_author]
-                    print('relevant_domain:', relevant_domain)
-                    relevant_domain_list.append(relevant_domain)
+                    #print('relevant case_author:', case_author)
+                    relevant_domains = period_author_domain_dict[case_author]
+                    #print('relevant_domain:', relevant_domain)
+                    relevant_domain_list += relevant_domains
 
-    print('relevant_domain_list:', relevant_domain_list)
+    #print('relevant_domain_list:', relevant_domain_list)
     df.at[row_index, 'domains_of_judges'] = relevant_domain_list
 
 df.to_csv('bverfg230107_with_break_noNaN_w_time_aware_features.csv')
+#df.to_csv('few_cols_bverfg230107_with_break_noNaN_w_time_aware_features.csv')
