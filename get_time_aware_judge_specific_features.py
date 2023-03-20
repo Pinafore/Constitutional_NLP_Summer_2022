@@ -28,8 +28,17 @@ avail_dm_list = [dm_prob[:-5] for dm_prob in dm_prob_list]
 avail_judge_list = [judge_prob[:-5] for judge_prob in judge_prob_list]
 #print('avail_judge_list:', avail_judge_list)
 
+
+#Initialize the df with judge-specific, domain-specific features
+df_judge_spec_dm_spec = df
+
+#This portion is to get judge-specific (but domains-combined) features
 for avail_judge in avail_judge_list:
     df[avail_judge + '_combined_domains_score'] = 0
+    df_judge_spec_dm_spec[avail_judge + '_combined_domains_score'] = 0
+
+    for avail_dm in avail_dm_list:
+        df_judge_spec_dm_spec[avail_judge + '_' + avail_dm + '_judge_domain_score'] = 0
 
 
 
@@ -51,11 +60,19 @@ for row_index, row in df.iterrows():
             print('domain_of_judge_with_prob:', domain_of_judge_with_prob)
             print('domain_prob:', domain_prob)
             judge_combined_domains_score += domain_prob
+
+            #This portion updates the judge-specific, domain-specific score features
+            df_judge_spec_dm_spec.at[row_index, avail_judge + '_' + avail_dm + '_judge_domain_score'] = domain_prob
+
+
         print('judge_combined_domains_score:', judge_combined_domains_score)
 
         df.at[row_index, judge + '_combined_domains_score'] = judge_combined_domains_score
+        df_judge_spec_dm_spec.at[row_index, judge + '_combined_domains_score'] = judge_combined_domains_score
 
-
-
+#Save data
 df.to_csv('bverfg230107_with_break_noNaN_w_time_aware_judge_specific_features.csv')
 df.to_pickle("bverfg230107_with_break_noNaN_w_time_aware_judge_specific_features.pkl")
+
+df_judge_spec_dm_spec.to_csv('bverfg230107_with_break_noNaN_w_time_aware_judge_spec_dm_spec_features.csv')
+df_judge_spec_dm_spec.to_pickle("bverfg230107_with_break_noNaN_w_time_aware_judge_spec_dm_spec_features.pkl")
