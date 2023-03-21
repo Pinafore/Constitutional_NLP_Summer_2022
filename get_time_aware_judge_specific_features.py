@@ -11,7 +11,7 @@ import pickle
 
 #df = pd.read_csv('bverfg230107_with_break_noNaN_w_time_aware_features.csv', low_memory=False)
 df = pd.read_pickle("bverfg230107_with_break_noNaN_w_time_aware_features.pkl")
-#df = df.head(100)
+#df = df.head(1)
 
 dm_prob_list = ['dm_levies_prob', 'dm2_nationality_prob', 'dm2_parliament_prob', 'dm2_publicservice_prob', 'dm_inheritance_prob', 'dm_tax_prob', 'dm_reunification_prob', 'dm_family_prob', 'dm_property_prob', 'dm_manifestations_prob', 'dm_corporations_prob', 'dm2_parties_prob', 'dm_environmental_prob', 'dm2_crim_prob', 'dm_socialsecurity_prob', 'dm2_victim_prob', 'dm2_prosecution_prob', 'dm2_pretrial_prob', 'dm_professions_prob', 'dm_labour_prob', 'dm_healthinsurance_prob', 'dm2_reinstatement_prob', 'dm_ip_prob', 'dm_competition_prob', 'dm_dataprotection_prob', 'dm_regulation_prob', 'dm2_adminoffence_prob', 'dm_landconsolidation_prob', 'dm_speech_prob', 'dm2_crimenforce_prob', 'dm_freedomgeneral_prob', 'dm2_asylum_prob', 'dm2_foreigner_prob', 'dm2_extradition_prob', 'dm_construction_prob', 'dm2_detention_prob', 'dm2_reopening_prob', 'dm2_church_prob', 'dm2_foreclosure_prob']
 print('len(dm_prob_list):', len(dm_prob_list))
@@ -55,14 +55,16 @@ for row_index, row in df.iterrows():
         #Look up the ATModel returned prob of each domain (if available) of the judge, then sum those probs up for every judge on the case
         judge_combined_domains_score = 0
         for domain_of_judge_with_prob in domains_of_judge_with_prob:
-            domain_of_judge_with_prob += '_prob'
-            domain_prob = row[domain_of_judge_with_prob]
-            print('domain_of_judge_with_prob:', domain_of_judge_with_prob)
+            domain_of_judge_with_prob_str = domain_of_judge_with_prob + '_prob'
+            domain_prob = row[domain_of_judge_with_prob_str]
+            print('domain_of_judge_with_prob_str:', domain_of_judge_with_prob_str)
             print('domain_prob:', domain_prob)
             judge_combined_domains_score += domain_prob
 
             #This portion updates the judge-specific, domain-specific score features
-            df_judge_spec_dm_spec.at[row_index, avail_judge + '_' + avail_dm + '_judge_domain_score'] = domain_prob
+            judge_spec_dm_spec_var = judge + '_' + domain_of_judge_with_prob + '_judge_domain_score'
+            print('judge_spec_dm_spec_var:', judge_spec_dm_spec_var)
+            df_judge_spec_dm_spec.at[row_index, judge_spec_dm_spec_var] = domain_prob
 
 
         print('judge_combined_domains_score:', judge_combined_domains_score)
