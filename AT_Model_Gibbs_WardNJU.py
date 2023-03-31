@@ -77,13 +77,13 @@ class ATM(object):
     implementation of `The Author-Topic Model for Authors and Documents` by Rosen-Zvi, et al. (2004)
     """
 
-    def __init__(self, dpre, K, alpha=0.1, beta=0.01, max_iter=100, seed=1):
+    def __init__(self, dpre, K, beta=0.01, max_iter=100, seed=1):
         # initial var
         self.dpre = dpre
         self.A = dpre.authors_count
         self.K = K #number of topics
         self.V = dpre.words_count
-        self.alpha = alpha
+        self.alpha = 50/K
         self.beta = beta
         self.max_iter = max_iter
         self.seed = seed
