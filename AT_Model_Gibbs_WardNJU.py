@@ -83,6 +83,7 @@ class ATM(object):
         self.A = dpre.authors_count
         self.K = K #number of topics
         self.V = dpre.words_count
+        #alpha = 50/num_topics, beta = 0.01 as recommended by the original Rosen-Zvi (2004) AT Model paper
         self.alpha = 50/K
         self.beta = beta
         self.max_iter = max_iter
