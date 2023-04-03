@@ -50,10 +50,18 @@ Wiki page of all judges in the court (the participating_judges variable in csv f
 Link of raw data (before scraping) to compare approx case id with year (note: smaller id means older cases; cases with id 10 or above probably decided after 1990s): https://www.bundesverfassungsgericht.de/SiteGlobals/Forms/Suche/Entscheidungensuche_Formular.html?gts=5403124_list%253Ddate_dt%252Basc&language_=de
 
 
-Code Pipeline:
+AT Model Code Pipeline:
 -> remove_irrelevant_cases.py
 -> Data_Preprocessing_for_Topic_Models.py
 -> Generate_author2doc.py
 -> Clean_author2doc.py
 -> Convert_author2doc_to_lol.py
 -> AT_Model_Gibbs_WardNJU.py
+
+Evaluation Pipeline:
+-> calculate_coherence.py
+-> automatic_topic_to_domain_map.py
+-> get_features_domain_and_author_probs_per_doc.py
+-> augment_clean_judges_to_csv.py
+-> get_time_aware_features.py
+-> get_time_aware_judge_specific_features.py
