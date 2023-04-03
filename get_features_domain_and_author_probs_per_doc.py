@@ -4,7 +4,8 @@ from collections import defaultdict
 import numpy as np
 import pandas as pd
 
-num_topics = 100
+
+num_topics = 50
 topN = num_topics
 def invert_one_to_one(my_map):
     inv_map = defaultdict(list)
@@ -130,21 +131,7 @@ print('len top_author_list:', len(top_author_list))
 print('len top_prob_list:', len(top_prob_list))
 
 additional_features_dict['top_author'] = top_author_list
-additional_features_dict['top_prob'] = top_prob_list
-
-'''
-#Find the highest-probability judge (referee)
-df_additional_author_features = pd.DataFrame(additional_author_features_dict)
-col_name = 'highest_prob_judge'
-df_highest_prob_judge = df_additional_author_features.idxmax(axis="columns")
-df_highest_prob_judge = pd.DataFrame(df_highest_prob_judge)
-df_highest_prob_judge['uid'] = range(doc_num)
-print('df_highest_prob_judge:', df_highest_prob_judge)
-#for doc_id in range(doc_num):
-#    df.idxmax(axis="columns")
-
-
-'''
+additional_features_dict['top_author_prob'] = top_prob_list
 
 
 
@@ -166,4 +153,6 @@ df = df_noNaN.merge(df_additional_features, on='uid')
 df.to_csv('bverfg230107_with_break_noNaN_w_domain_and_topic_prob_features.csv')
 
 
-#additional_features: dict_keys(['uid', 'dm_levies_prob', 'dm2_nationality_prob', 'dm2_parliament_prob', 'dm2_publicservice_prob', 'dm_inheritance_prob', 'dm_tax_prob', 'dm_reunification_prob', 'dm_family_prob', 'dm_property_prob', 'dm_manifestations_prob', 'dm_corporations_prob', 'dm2_parties_prob', 'dm_environmental_prob', 'dm2_crim_prob', 'dm_socialsecurity_prob', 'dm2_victim_prob', 'dm2_prosecution_prob', 'dm2_pretrial_prob', 'dm_professions_prob', 'dm_labour_prob', 'dm_healthinsurance_prob', 'dm2_reinstatement_prob', 'dm_ip_prob', 'dm_competition_prob', 'dm_dataprotection_prob', 'dm_regulation_prob', 'dm2_adminoffence_prob', 'dm_landconsolidation_prob', 'dm_speech_prob', 'dm2_crimenforce_prob', 'dm_freedomgeneral_prob', 'dm2_asylum_prob', 'dm2_foreigner_prob', 'dm2_extradition_prob', 'dm_construction_prob', 'dm2_detention_prob', 'dm2_reopening_prob', 'dm2_church_prob', 'dm2_foreclosure_prob'])
+#additional_features: dict_keys(['uid', 'dm_environmental_prob', 'dm_tax_prob', 'dm_property_prob', 'dm_labour_prob', 'dm2_crim_prob', 'dm2_publicservice_prob', 'dm_family_prob', 'dm_corporations_prob', 'dm_socialsecurity_prob', 'dm2_foreigner_prob', 'dm_manifestations_prob', 'dm_levies_prob', 'dm2_municipalities_prob', 'dm_professions_prob', 'dm2_extradition_prob', 'dm2_parliament_prob', 'dm2_prosecution_prob', 'dm_freedomgeneral_prob', 'dm_speech_prob', 'dm2_detention_prob', 'dm2_pretrial_prob',
+#'baer_prob', 'britz_prob', 'bross_prob', 'brossss_prob', 'bryde_prob', 'christ_prob', 'difabio_prob', 'eichberger_prob', 'fkirchhof_prob', 'gaier_prob', 'gerhard_prob', 'gerhardt_prob', 'grasshof_prob', 'grimm_prob', 'haas_prob', 'haertel_prob', 'harbarth_prob', 'hassemer_prob', 'hermanns_prob', 'hoemig_prob', 'hoffmannriem_prob', 'hohmanndennhardt_prob', 'huber_prob', 'jaeger_prob', 'jentsch_prob', 'kessalwulf_prob', 'kessalwulff_prob', 'koenig_prob', 'kruis_prob', 'kuehling_prob', 'landau_prob', 'langenfeld_prob', 'limbach_prob', 'luebbewolff_prob', 'maidowski_prob', 'masing_prob', 'mellinghoff_prob', 'osterloh_prob', 'ott_prob', 'papier_prob', 'paulus_prob', 'pkirchhof_prob', 'pmueller_prob', 'radtke_prob', 'schluckebier_prob', 'seibert_prob', 'seidl_prob', 'sommer_prob', 'steiner_prob', 'vosskuhle_prob', 'wallrabenstein_prob', 'winter_prob', 'wolff_prob',
+# 'top_author', 'top_author_prob'])

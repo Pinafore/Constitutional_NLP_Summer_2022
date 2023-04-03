@@ -14,3 +14,4 @@ df_with_additional_features = pd.read_csv('bverfg230107_with_break_noNaN_w_domai
 df = df_with_additional_features.merge(df_with_clean_judges, on='uid')
 
 df.to_csv('bverfg230107_with_break_noNaN_w_additional_features_and_clean_judges.csv')
+
