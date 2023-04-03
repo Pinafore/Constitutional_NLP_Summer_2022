@@ -139,9 +139,10 @@ print('avg_precision:', avg_precision)
 
 
 #Results:
-#num_topics = 50 -> avg_precision: 0.676530612244898
-#num_topics = 100 -> avg_precision:  0.6697278911564626
-#num_topics = 200 -> avg_precision:  0.6802721088435374
+#num_topics = 10 -> avg_precision: 0.632312925170068
+#num_topics = 50 -> avg_precision: 0.6731292517006803
+#num_topics = 100 -> avg_precision: 0.6795918367346939
+#num_topics = 200 -> avg_precision: 0.6792517006802721
 
 
 
