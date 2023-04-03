@@ -3,6 +3,7 @@ from pandas import *
 import json
 import argparse
 from collections import defaultdict
+import numpy as np
 
 def word_match(topword, keyword):
     #Exact match regardless of word length
@@ -40,13 +41,14 @@ assert word_match('love', 'lovely')
 
 
 
-def find_first_matched_dm(topic, topwords, topword_index, dm_keywords_dict, automatic_topic_to_domain_map):
+def find_first_matched_dm(topic, topwords, topword_index, dm_keywords_dict, automatic_topic_to_domain_map, topword_index_list):
     for topword in topwords:
         topword_index += 1
         for dm, keywords in dm_keywords_dict.items():
             for keyword in keywords:
                 if word_match(topword, keyword):
                     automatic_topic_to_domain_map[topic] = dm
+                    topword_index_list.append(topword_index)
                     '''
                     print('topic:', topic)
                     print('dm:', dm)
@@ -55,7 +57,7 @@ def find_first_matched_dm(topic, topwords, topword_index, dm_keywords_dict, auto
                     print('topword_index:', topword_index)
                     print('before automatic_topic_to_domain_map:', automatic_topic_to_domain_map)
                     print('after automatic_topic_to_domain_map:', automatic_topic_to_domain_map)
-                    '''
+                    
 
                     #See at which topword_index is there a match for the two domains of highest recall (dm_family) and precision (dm2_asylum)
                     if dm == 'dm_family' or dm == 'dm2_asylum':
@@ -64,10 +66,11 @@ def find_first_matched_dm(topic, topwords, topword_index, dm_keywords_dict, auto
                         print('topword:', topword)
                         print('keyword:', keyword)
                         print('topword_index:', topword_index)
+                    '''
 
-                    return automatic_topic_to_domain_map
+                    return automatic_topic_to_domain_map, topword_index_list
     #still have to return sth (the same dict with no modification) if cant find a match among the 1000 top words
-    return automatic_topic_to_domain_map
+    return automatic_topic_to_domain_map, topword_index_list
 
 '''
 for topic, topwords in words_per_topic_dict.items():
@@ -113,12 +116,28 @@ if __name__ == '__main__':
     with open('WardNJU_words_per_topic_num_topics=' + str(num_topics) + '.json', 'rb') as f:
         words_per_topic_dict = pickle.load(f)
 
+    topword_index_list = []
+
     for topic, topwords in words_per_topic_dict.items():
         #automatic_topic_to_domain_map[topic] = []
         topword_index = 0
-        automatic_topic_to_domain_map = find_first_matched_dm(topic, topwords, topword_index, dm_keywords_dict, automatic_topic_to_domain_map)
+        #Only consider the top 10 top words for the topic-to-domain map
+        topwords = topwords[:10]
 
-    print('automatic_topic_to_domain_map:', automatic_topic_to_domain_map)
+        automatic_topic_to_domain_map, topword_index_list = find_first_matched_dm(topic, topwords, topword_index, dm_keywords_dict, automatic_topic_to_domain_map, topword_index_list)
+
+    #print('automatic_topic_to_domain_map:', automatic_topic_to_domain_map)
+    print('topword_index_list:', sorted(topword_index_list))
+    print('len: ', len(topword_index_list))
+
+    topword_index_lower_quartile = np.percentile(topword_index_list, 25, method='closest_observation')
+    print('topword_index_lower_quartile:', topword_index_lower_quartile)
+
+    topword_index_med = np.percentile(topword_index_list, 50, method='closest_observation')
+    print('topword_index_med:', topword_index_med)
+
+    topword_index_upper_quartile = np.percentile(topword_index_list, 75, method='closest_observation')
+    print('topword_index_upper_quartile:', topword_index_upper_quartile)
 
     with open('automatic_topic_to_domain_map_num_topics=' + str(num_topics) + '.json', 'w') as f:
         json.dump(automatic_topic_to_domain_map, f)
@@ -128,3 +147,22 @@ if __name__ == '__main__':
 
     with open('automatic_topic_to_domain_map_num_topics=' + str(num_topics) + '.txt', "w") as f:
         n = f.write(str(automatic_topic_to_domain_map))
+
+
+#Keep track of indices of top_word that matches a keyword for every topic
+#num_topics = 10
+#topword_index_list: [1, 1, 1, 2, 2, 2, 3, 5]
+#len:  8
+
+#num_topics = 50
+#topword_index_list: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8, 10]
+#len:  32
+
+#num_topics = 100
+#topword_index_list: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 6, 6, 6, 6, 6, 7, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 10]
+#len:  59
+
+#num_topics = 200
+#topword_index_list: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10]
+#len:  92
+
