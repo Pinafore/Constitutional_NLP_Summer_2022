@@ -4,7 +4,7 @@ import json
 #inputstring = ' some strings are present in between "geeks" "for" "geeks" '
 
 #print(re.findall('"([^"]*)"', inputstring))
-num_topics=10
+num_topics=200
 
 with open('LDA_words_per_topic_num_topics=' + str(num_topics) + '.json', 'rb') as f:
     words_per_topic_dict = pickle.load(f)
