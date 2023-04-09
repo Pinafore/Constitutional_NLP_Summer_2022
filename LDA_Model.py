@@ -13,6 +13,7 @@ import pandas as pd
 import string
 import json
 import argparse
+import pickle
 
 import spacy
 from gensim import corpora
@@ -57,7 +58,7 @@ def output_topics(model, num_topics):
 
     words_per_topic_dict = {}
     for topicno in range(num_topics):
-        sorted_topic_terms = model.print_topic(topicno=topicno, topn=1000)
+        sorted_topic_terms = model.print_topic(topicno=topicno, topn=10)
         words_per_topic_dict[topicno] = sorted_topic_terms
 
     with open('LDA_words_per_topic_num_topics=' + str(num_topics) + '.json', 'wb') as f:
@@ -101,22 +102,24 @@ if __name__ == "__main__":
   parser.add_argument('--limit', type=int,
                       default=-1, help="Limit of number of cases")
   parser.add_argument('--cases_source', type=str,
-                      default="case_scraping_01_1998_to_07_2022_noNaN.csv")
-  parser.add_argument('--num_topics', type=int, default=50)
+                      default="bverfg230107_with_break_noNaN.csv")
+  parser.add_argument('--num_topics', type=int, default=200)
   
   flags = parser.parse_args()
-  
-  #dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
 
   # Save and Load
-  import pickle
 
+#Comment out this section after first run and having saved the dictionary and cases
   '''
+  dictionary, cases = read_cases(flags.cases_source, limit=flags.limit)
   with open('read_cases_dictionary.json', 'wb') as f:
       pickle.dump(dictionary, f)
   with open('read_cases_cases.json', 'wb') as f:
       pickle.dump(cases, f)
   '''
+  # Comment out this section after first run and having saved the dictionary and cases
+
+
   with open('read_cases_dictionary.json', 'rb') as f:
       dictionary = pickle.load(f)
   with open('read_cases_cases.json', 'rb') as f:
