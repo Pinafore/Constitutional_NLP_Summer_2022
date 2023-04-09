@@ -95,7 +95,7 @@ def lemmatization(text, allowed_postags=['NOUN', 'ADJ', 'VERB']):
 
 def read_cases(filename, limit=-1):
     print('read_cases started')
-    col_list = ["bverfg_id_forward", "full_text"]
+    col_list = ["uid", "full_text"]
     # col_list = ["full_text"]
 
     if limit > 0:
