@@ -6,21 +6,20 @@ import argparse
 from statistics import stdev, median_high
 import numpy as np
 
-'''
-# Construct a compact csv with only id (0-8111) and domains
-data = read_csv("case_scraping_01_1998_to_07_2022_noNaN_all.csv")
+# Construct a compact csv with only uid and domains
+#data = read_csv("case_scraping_01_1998_to_07_2022_noNaN_all.csv")
+data = read_csv("bverfg230107_with_break_noNaN.csv")
 list_of_cols = data.columns.tolist()
 dm_list = []
 for col in list_of_cols:
     if col[0:2] == "dm":
         dm_list += [col]
-id_dm_list = ["id"] + dm_list
-print("id_dm_list:", id_dm_list)
+uid_dm_list = ["uid"] + dm_list
+print("uid_dm_list:", uid_dm_list)
 
-data_compact = data[id_dm_list]
+data_compact = data[uid_dm_list]
 print(data_compact.head)
-data_compact.to_csv("id_and_domains_Aug01.csv")
-'''
+data_compact.to_csv("uid_and_domains_bverfg230107.csv")
 
 
 #print("data_compact:", data_compact)
@@ -36,21 +35,21 @@ def recall_and_precision(dm, topic_to_domain_dict, data_compact, topics_prob_per
     #print('topics_corresponding_to_dm :', topics_corresponding_to_dm )
 
 
-    df = data_compact[['id'] + [dm]]
+    df = data_compact[['uid'] + [dm]]
     #print('df:', df)
 
     true_pos = 0
     false_neg = 0
     false_pos = 0
     for index, row in df.iterrows():
-        id = row['id']
+        #Doc index by LDA starts at 1, not 0! (so from 1 to 8112)
+        id = row['uid'] + 1
         #print('id:', id)
         #print('topics_prob_per_doc_all:', topics_prob_per_doc_all)
-        LDA_topics = topics_prob_per_doc_all[str(id)]
+        LDA_topics = topics_prob_per_doc_all[str(int(id))]
         #print('LDA_topics:', LDA_topics)
         #print('ATM_topics:', ATM_topics)
         intersection = list(set(topics_corresponding_to_dm).intersection(set(LDA_topics)))
-        #print('intersection:', intersection)
         #print('row[dm]:', row[dm])
         if row[dm] == 1:
             if len(intersection) > 0:
@@ -116,7 +115,7 @@ if __name__ == '__main__':
         topics_prob_per_doc_all = json.load(f)
 
  
-    data_compact = read_csv("id_and_domains_Aug01.csv")
+    data_compact = read_csv("uid_and_domains_bverfg230107.csv")
 
     dm_list = []
     recall_list = []
@@ -195,11 +194,3 @@ if __name__ == '__main__':
     precision_min_idx = precision_list.index(precision_min)
     dm_precision_min = dm_list[precision_min_idx]
     print('dm_precision_min:', dm_precision_min)
-
-
-
-    #with open('recall_and_precision_' + str(flags.map) + '_num_topics=' + str(num_topics) + '.json', 'w') as f:
-    #   json.dump(automatic_topic_to_domain_map, f)
-
-    #with open('recall_and_precision_' + str(flags.map) + '_num_topics=' + str(num_topics) + '.json', 'r') as f:
-    #    automatic_topic_to_domain_map = json.load(f)
