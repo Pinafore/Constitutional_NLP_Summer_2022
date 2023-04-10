@@ -138,7 +138,7 @@ avg_precision = np.mean(precision_list)
 print('avg_precision:', avg_precision)
 
 
-#Results:
+#Results: (1470 cases)
 #num_topics = 10 -> avg_precision: 0.632312925170068
 #num_topics = 50 -> avg_precision: 0.6731292517006803
 #num_topics = 100 -> avg_precision: 0.6795918367346939

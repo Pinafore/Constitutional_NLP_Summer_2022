@@ -106,7 +106,7 @@ dist = Counter(list_ref)
 print('dist:', dist)
 '''
 
-#Results on all cases:
+#Results on all cases: (3192 cases)
 #num_topics = 10 -> total accuracy:= 0.4406670942912123
 #num_topics = 50 -> total accuracy:= 0.5493906350224503
 #num_topics = 100 -> total accuracy:= 0.5971776779987171
