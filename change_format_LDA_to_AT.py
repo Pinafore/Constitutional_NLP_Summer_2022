@@ -22,7 +22,7 @@ print('words_per_topic_dict_top10:', words_per_topic_dict_top10)
 with open('LDA_formatted_top10_words_per_topic_num_topics=' + str(num_topics) + '.json', 'w') as f:
     json.dump(words_per_topic_dict_top10, f)
 
-'''
+
 with open('LDA_topics_per_doc_num_topics=' + str(num_topics) + '.json', 'rb') as f:
     topics_per_doc_dict = pickle.load(f)
 
@@ -31,4 +31,3 @@ print('topics_per_doc_dict:', topics_per_doc_dict)
 
 with open('LDA_formatted_topics_per_doc_num_topics=' + str(num_topics) + '.json', 'w') as f:
     json.dump(topics_per_doc_dict, f)
-    '''
