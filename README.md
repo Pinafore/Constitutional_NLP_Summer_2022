@@ -10,8 +10,7 @@ Legal NLP Project (with MPI Coll) -> Updated Data -> case_scraping_Aug_01_2022.c
 
 Some variables (columns) of current interest are 'participating_judges' and 'full_text'.
 
-1.b. Ground-truth domains of each author (1998-2021 only): https://docs.google.com/spreadsheets/d/1IgzpIj6pU7uMIKuyO27jugwK_MTbEeEW/edit#gid=853052284
-
+1.b. Ground-truth domains of each author (1998-2022): https://docs.google.com/spreadsheets/d/1xf3cCwArTWHxHNR_7T9D5vjafiw3P18L/edit#gid=1305781617
 
 2.1. How to run LDA?
 
