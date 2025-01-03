@@ -1,5 +1,26 @@
-# Legal NLP with Topic Models
+# NLP for the German Federal Constitutional Court: Identifying the Justice Referee
 
+In the judicial system, transparency about which judges decide a case is important for 
+providing accountability, and understanding political ideologies. 
+The German Federal Constitutional Court doesn't publicly disclose judge votes; 
+however, cases are often heavily influenced by a single "judge referee", and the structure of judge assignments to cases by domain provides clues.
+We introduce and investigate the task of predicting referee judges from court rulings.
+We filter candidate referee judge(s) based on domain keyword matching, and evaluate classification models. 
+
+- GPT-4
+- logistic regression
+- author-topic model
+
+Summary of code
+- 2024 Referee: R scripts for data pre and postprocessing for GPT4
+- python: Python scripts to run GPT-4
+- notebooks: logistic regression experiments, calculate accuracy scores for GPT-4
+
+
+GPT-4 achieves high accuracy on the chambers, but logistic regression and the author-topic model have the advantage of disambiguating referees in the larger senates.
+We believe that this work can help future analyses with understanding judge and court political philosophies. 
+
+# Legal NLP with Topic Models
 
 1. How to download the two relevant csv files locally?
 
